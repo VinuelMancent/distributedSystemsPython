@@ -44,15 +44,22 @@ def send_broadcast_message(message, port):
     broadcast_socket.close()
 
 
-def tcp_unicast_listener(stopQueue: queue.Queue):
+def tcp_unicast_listener(stopQueue: queue.Queue, timeUntilProblem: int = 5):
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tcp_socket.bind(('0.0.0.0', 0))
     tcp_socket.listen(1)
+    tcp_socket.settimeout(timeUntilProblem)
 
     print("mw44: TCP Unicast Listener gestartet.")
     while stopQueue.qsize() == 0:
-        conn, addr = tcp_socket.accept()
-        print(f"mw47: Verbindung von {addr}")
-        data = conn.recv(1024)
-        print(f"mw49: Empfangene TCP-Nachricht: {data.decode()}")
-        conn.close()
+        try:
+            # Akzeptiere eine eingehende Verbindung
+            client_socket, address = tcp_socket.accept()
+            print(f'Connection from {address[0]}:{address[1]}')
+            # Empfange Daten vom Client
+            data = client_socket.recv(1024)
+            # Sende eine Antwort an den Client
+            client_socket.sendall(b'Hello, world!')
+        except socket.timeout:
+            print('Timeout beim Empfangen von Daten.')
+            break
