@@ -38,7 +38,7 @@ if __name__ == "__main__":
             received_message: Instruction = broadcast_queue.get(timeout=TIME_TIL_RESPONSE_IN_SECONDS)
             # ignore my own messages
             if received_message.body != user.id and received_message.action == "room":
-                roomState = roomState.from_json(received_message.body) # ToDo: fix this, so it simply turns the json into object, and not use the constructor with the local user
+                roomState = roomState.from_json(received_message.body)
                 print(f"l42: Received message: {received_message.action}:{received_message.body}")
                 break
     except queue.Empty:

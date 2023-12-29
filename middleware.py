@@ -9,11 +9,18 @@ def udp_broadcast_listener(messageQueue: queue.Queue, stopQueue: queue.Queue, ro
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    udp_socket.settimeout(5)
     udp_socket.bind(('0.0.0.0', 61424))
 
     print("mw14: UDP Broadcast Listener gestartet.")
     while stopQueue.qsize() == 0:
-        data, addr = udp_socket.recvfrom(1024)
+        data: bytes = bytes()
+        addr: any
+        try:
+            data, addr = udp_socket.recvfrom(1024)
+        except socket.timeout:
+            print("Zeitüberschreitung beim Empfangen von Daten.")
+            continue
         receivedInstruction: Instruction = json.loads(data.decode(), object_hook=lambda d: Instruction(**d))
         match receivedInstruction.action:
             case "join":
