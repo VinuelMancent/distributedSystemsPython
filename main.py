@@ -1,4 +1,6 @@
 import json
+import sys
+import time
 import uuid
 
 from middleware import udp_broadcast_listener, send_broadcast_message, tcp_unicast_listener
@@ -6,6 +8,7 @@ from person import Person
 from roomState import RoomState
 from ticket import Ticket
 from instruction import Instruction
+from objectHooks import roomstate_object_hook
 import threading
 import queue
 
@@ -16,11 +19,12 @@ if __name__ == "__main__":
     broadcastPort = 61424
     roomState: RoomState = RoomState(user)
     broadcast_queue = queue.Queue()
+    stop_queue = queue.Queue()
 
-    udp_listener_thread = threading.Thread(target=udp_broadcast_listener, args=(broadcast_queue,))
+    udp_listener_thread = threading.Thread(target=udp_broadcast_listener, args=(broadcast_queue, stop_queue, roomState))
     udp_listener_thread.start()
 
-    tcp_listener_thread = threading.Thread(target=tcp_unicast_listener)
+    tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue,))
     tcp_listener_thread.start()
 
     # send join request
@@ -33,20 +37,20 @@ if __name__ == "__main__":
         while True:
             received_message: Instruction = broadcast_queue.get(timeout=TIME_TIL_RESPONSE_IN_SECONDS)
             # ignore my own messages
-            if received_message.body != user.id:
-                roomState = json.loads(received_message.body, object_hook=lambda d: RoomState(user)) # ToDo: Check if this works
-                print(f"Received message: {received_message.action}:{received_message.body}")
+            if received_message.body != user.id and received_message.action == "room":
+                roomState = roomState.from_json(received_message.body) # ToDo: fix this, so it simply turns the json into object, and not use the constructor with the local user
+                print(f"l42: Received message: {received_message.action}:{received_message.body}")
                 break
     except queue.Empty:
-        print("No message received within the timeout")
+        print("l45: No message received within the timeout")
         roomState = RoomState(user)
-        print("You created a new Room and are the responsible Person")
+        print("l47: You created a new Room and are the responsible Person")
 
     if roomState.Responsible.id == user.id:
         while True:
-            response = input("Do you want to create a Ticket?(Y/N)")
+            response = input("l51: Do you want to create a Ticket?(Y/N)")
             if response.upper() == "Y":
-                ticketContent = input("What is the task of the ticket?")
+                ticketContent = input("l53: What is the task of the ticket?")
                 ticket: Ticket = Ticket(ticketContent)
                 roomState.Tickets.append(ticket)
             else:
@@ -58,20 +62,24 @@ if __name__ == "__main__":
     else:
         while True:
             received_message: Instruction = broadcast_queue.get()
-            print("Waiting for responsible person to go into phase 2")
+            print("l65: Waiting for responsible person to go into phase 2")
             # only check for instruction phase 2
             if (received_message.action == "Phase") and (received_message.body == "2"):
-                print("Responsible person gave instruction to go into phase 2")
+                print("l68: Responsible person gave instruction to go into phase 2")
                 break
-    print("We are now in phase 2")
+    print("l70: We are now in phase 2")
     for ticket in roomState.Tickets:
-        print(f"We are now guessing the ticket '{ticket.content}'")
+        print(f"l72: We are now guessing the ticket '{ticket.content}'")
         while True:
             try:
-                question = int(input("What is your guess?"))
+                question = int(input("l75: What is your guess?"))
                 break
             except:
-                print("That's not a valid option!")
+                print("l78: That's not a valid option!")
 
-    print("We are done guessing the tickets, goodbye!")
-    exit(0)
+    print("l80: We are done guessing the tickets, goodbye!")
+    threadsRunning = False
+    stop_queue.put(threadsRunning)
+    stop_queue.put(threadsRunning)
+    time.sleep(5)
+    sys.exit(0)
