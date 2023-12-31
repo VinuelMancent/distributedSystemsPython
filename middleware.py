@@ -1,11 +1,13 @@
 import socket
+import time
+
 from roomState import RoomState
 from instruction import Instruction
 import json
 import queue
 
 
-def udp_broadcast_listener(messageQueue: queue.Queue, stopQueue: queue.Queue, roomState: RoomState, command: str = ""):
+def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queue, stopQueue: queue.Queue, roomState: RoomState, command: str = ""):
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -26,15 +28,27 @@ def udp_broadcast_listener(messageQueue: queue.Queue, stopQueue: queue.Queue, ro
             case "join":
                 messageQueue.put(receivedInstruction)
                 roomInstruction = Instruction("room", json.dumps(roomState.to_dict(), indent=2))
-                print(f"mw22: roomInstruction: {roomInstruction}")
+                print(f"mw31: roomInstruction: {roomInstruction}")
                 message = json.dumps(roomInstruction, default=vars)
                 send_broadcast_message(message, 61424)
-                print(f"mw24: {receivedInstruction}")
+                print(f"mw34: {receivedInstruction}")
             case "room":
                 messageQueue.put(receivedInstruction)
-                print(f"mw27: {receivedInstruction}")
+                print(f"mw37: {receivedInstruction}")
+            case "heartbeat":
+                heartbeatQueue.put(receivedInstruction)
+                print(f"mw40: {receivedInstruction}")
             case _:
-                print(f"mw29: Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
+                print(f"mw43: Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
+
+
+def send_heartbeat(port, person):
+    TIME_BETWEEN_HEARTBEATS = 5
+    instruction = Instruction("heartbeat", person.id)
+    message = json.dumps(instruction, default=vars)
+    while True:
+        send_broadcast_message(message, port)
+        time.sleep(TIME_BETWEEN_HEARTBEATS)
 
 
 def send_broadcast_message(message, port):
@@ -50,7 +64,7 @@ def tcp_unicast_listener(stopQueue: queue.Queue, timeUntilProblem: int = 5):
     tcp_socket.listen(1)
     tcp_socket.settimeout(timeUntilProblem)
 
-    print("mw44: TCP Unicast Listener gestartet.")
+    print("mw67: TCP Unicast Listener gestartet.")
     while stopQueue.qsize() == 0:
         try:
             # Akzeptiere eine eingehende Verbindung
@@ -61,5 +75,5 @@ def tcp_unicast_listener(stopQueue: queue.Queue, timeUntilProblem: int = 5):
             # Sende eine Antwort an den Client
             client_socket.sendall(b'Hello, world!')
         except socket.timeout:
-            print('Timeout beim Empfangen von Daten.')
+            print("Timeout beim Empfangen von Daten.")
             break

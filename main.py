@@ -3,12 +3,11 @@ import sys
 import time
 import uuid
 
-from middleware import udp_broadcast_listener, send_broadcast_message, tcp_unicast_listener
+from middleware import udp_broadcast_listener, send_broadcast_message, send_heartbeat, tcp_unicast_listener
 from person import Person
 from roomState import RoomState
 from ticket import Ticket
 from instruction import Instruction
-from objectHooks import roomstate_object_hook
 import threading
 import queue
 
@@ -20,12 +19,19 @@ if __name__ == "__main__":
     roomState: RoomState = RoomState(user)
     broadcast_queue = queue.Queue()
     stop_queue = queue.Queue()
+    heartbeat_queue = queue.Queue()
 
-    udp_listener_thread = threading.Thread(target=udp_broadcast_listener, args=(broadcast_queue, stop_queue, roomState))
+    udp_listener_thread = threading.Thread(target=udp_broadcast_listener, args=(broadcast_queue, heartbeat_queue, stop_queue, roomState))
     udp_listener_thread.start()
 
     tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue,))
     tcp_listener_thread.start()
+
+    heartbeat_sender_thread = threading.Thread(target=send_heartbeat, args=(broadcastPort, user))
+    heartbeat_sender_thread.start()
+
+    heartbeat_manager_thread = threading.Thread(args=(heartbeat_queue, user))
+    heartbeat_manager_thread.start()
 
     # send join request
     joinInstruction = Instruction("join", user.id)
@@ -46,9 +52,15 @@ if __name__ == "__main__":
         roomState = RoomState(user)
         print("l47: You created a new Room and are the responsible Person")
 
+    #BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
+
     if roomState.Responsible.id == user.id:
         while True:
-            response = input("l51: Do you want to create a Ticket?(Y/N)")
+            response = ""
+            if len(roomState.Tickets) == 0:
+                response = "Y"
+            else:
+                response = input("l51: Do you want to create a Ticket?(Y/N)") # diese frage erst ab dem zweiten mal stellen, oder einen check einbauen, dass mindestens ein ticket erstellt werden muss
             if response.upper() == "Y":
                 ticketContent = input("l53: What is the task of the ticket?")
                 ticket: Ticket = Ticket(ticketContent)
@@ -67,6 +79,7 @@ if __name__ == "__main__":
             if (received_message.action == "Phase") and (received_message.body == "2"):
                 print("l68: Responsible person gave instruction to go into phase 2")
                 break
+
     print("l70: We are now in phase 2")
     for ticket in roomState.Tickets:
         print(f"l72: We are now guessing the ticket '{ticket.content}'")
