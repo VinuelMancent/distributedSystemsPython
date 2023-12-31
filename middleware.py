@@ -1,6 +1,7 @@
 import socket
 import time
 
+from person import Person
 from roomState import RoomState
 from instruction import Instruction
 import json
@@ -27,6 +28,7 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
         match receivedInstruction.action:
             case "join":
                 messageQueue.put(receivedInstruction)
+                roomState.add_person(Person(receivedInstruction.body, False))
                 roomInstruction = Instruction("room", json.dumps(roomState.to_dict(), indent=2))
                 print(f"mw31: roomInstruction: {roomInstruction}")
                 message = json.dumps(roomInstruction, default=vars)

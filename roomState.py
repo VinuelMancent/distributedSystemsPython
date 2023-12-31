@@ -15,10 +15,10 @@ class RoomState:
 
     def to_dict(self):
         return {
-            "Persons": [person.__dict__ for person in self.Persons],
+            "Persons": [person.to_dict() for person in self.Persons],
             "Tickets": [ticket.__dict__ for ticket in self.Tickets],
             "Phase": self.Phase,
-            "Responsible": self.Responsible.__dict__
+            "Responsible": self.Responsible.to_dict()
         }
 
     @classmethod

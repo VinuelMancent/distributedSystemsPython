@@ -8,6 +8,7 @@ from person import Person
 from roomState import RoomState
 from ticket import Ticket
 from instruction import Instruction
+from heartbeat_manager import manage_heartbeats
 import threading
 import queue
 
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     heartbeat_sender_thread = threading.Thread(target=send_heartbeat, args=(broadcastPort, user))
     heartbeat_sender_thread.start()
 
-    heartbeat_manager_thread = threading.Thread(args=(heartbeat_queue, user))
+    heartbeat_manager_thread = threading.Thread(target= manage_heartbeats, args=(heartbeat_queue, user, roomState))
     heartbeat_manager_thread.start()
 
     # send join request
