@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="trying to finish the heartbeat_manager">
+    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="heartbeats now get stored correctly, kicking still needs some work">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heartbeat_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/heartbeat_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/person.py" beforeDir="false" afterPath="$PROJECT_DIR$/person.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/roomState.py" beforeDir="false" afterPath="$PROJECT_DIR$/roomState.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,7 +123,9 @@
       <workItem from="1704030251805" duration="651000" />
       <workItem from="1704033080615" duration="3205000" />
       <workItem from="1704036385305" duration="47000" />
-      <workItem from="1704113910787" duration="1100000" />
+      <workItem from="1704113910787" duration="1208000" />
+      <workItem from="1704117507479" duration="1830000" />
+      <workItem from="1704124035344" duration="477000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -179,7 +183,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704036419205</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="heartbeats now get stored correctly, kicking still needs some work">
+      <option name="closed" value="true" />
+      <created>1704115115741</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1704115115741</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -204,10 +216,11 @@
     <MESSAGE value="added a timeout for tcp listener as well, programm now stops at the end" />
     <MESSAGE value="trying to start heartbeats" />
     <MESSAGE value="trying to finish the heartbeat_manager" />
-    <option name="LAST_COMMIT_MESSAGE" value="trying to finish the heartbeat_manager" />
+    <MESSAGE value="heartbeats now get stored correctly, kicking still needs some work" />
+    <option name="LAST_COMMIT_MESSAGE" value="heartbeats now get stored correctly, kicking still needs some work" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ScrumPoker$main.coverage" NAME="main Coverage Results" MODIFIED="1704114943156" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/ScrumPoker$main.coverage" NAME="main Coverage Results" MODIFIED="1704124417858" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/ScrumPoker$middleware.coverage" NAME="middleware Coverage Results" MODIFIED="1703543306028" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ScrumPoker$instruction.coverage" NAME="instruction Coverage Results" MODIFIED="1703545325415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>

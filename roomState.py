@@ -1,5 +1,5 @@
 import json
-
+import logging
 from person import Person
 from ticket import Ticket
 import threading
@@ -32,6 +32,14 @@ class RoomState:
     def add_person(self, person):
         with self.lock:
             self.Persons.append(person)
+
+    def kick_person(self, id):
+        with self.lock:
+            logging.debug(f"kicking person {id}")
+            for person in self.Persons:
+                if person.id == id:
+                    logging.debug(f"kicking {person}")
+                    self.Persons.remove(person)
 
     def add_ticket(self, ticket):
         with self.lock:
