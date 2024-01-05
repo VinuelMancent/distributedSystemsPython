@@ -1,6 +1,7 @@
 import socket
 import time
 
+from ticket import Ticket
 from person import Person
 from roomState import RoomState
 from instruction import Instruction
@@ -15,7 +16,7 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
     udp_socket.settimeout(5)
     udp_socket.bind(('0.0.0.0', 61424))
 
-    print("mw14: UDP Broadcast Listener gestartet.")
+    print("UDP Broadcast Listener gestartet.")
     while stopQueue.qsize() == 0:
         data: bytes = bytes()
         addr: any
@@ -26,9 +27,8 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
             continue
         except socket.error as err:
             print(f"Received error: {err}")
-        print(data.decode())
         receivedInstruction: Instruction = Instruction(**json.loads(data.decode()))
-        print(f"receivedInstruction: {receivedInstruction.action}")
+        #print(f"receivedInstruction: {receivedInstruction.action}")
         match receivedInstruction.action:
             case "join":
                 messageQueue.put(receivedInstruction)
@@ -42,6 +42,8 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 heartbeatQueue.put(receivedInstruction)
             case "phase":
                 messageQueue.put(receivedInstruction)
+            case "ticket":
+                roomState.add_ticket(Ticket.from_json(receivedInstruction.body))
             case _:
                 print(f"mw43: Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
 
@@ -50,7 +52,6 @@ def send_heartbeat(port, person):
     TIME_BETWEEN_HEARTBEATS = 5
     instruction = Instruction("heartbeat", person.id, person.id)
     message = json.dumps(instruction, default=vars)
-    print(f"sendin heartbeat: {message}")
     while True:
         send_broadcast_message(message, port)
         time.sleep(TIME_BETWEEN_HEARTBEATS)
@@ -69,7 +70,7 @@ def tcp_unicast_listener(stopQueue: queue.Queue, timeUntilProblem: int = 5):
     tcp_socket.listen(1)
     tcp_socket.settimeout(timeUntilProblem)
 
-    print("mw67: TCP Unicast Listener gestartet.")
+    print("TCP Unicast Listener gestartet.")
     while stopQueue.qsize() == 0:
         try:
             # Akzeptiere eine eingehende Verbindung

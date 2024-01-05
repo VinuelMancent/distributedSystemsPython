@@ -3,6 +3,7 @@ import sys
 import time
 import uuid
 
+import middleware
 from middleware import udp_broadcast_listener, send_broadcast_message, send_heartbeat, tcp_unicast_listener
 from person import Person
 from roomState import RoomState
@@ -25,8 +26,8 @@ if __name__ == "__main__":
     udp_listener_thread = threading.Thread(target=udp_broadcast_listener, args=(broadcast_queue, heartbeat_queue, stop_queue, roomState, user))
     udp_listener_thread.start()
 
-    tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue,))
-    tcp_listener_thread.start()
+    #tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue,))
+    #tcp_listener_thread.start()
 
     heartbeat_sender_thread = threading.Thread(target=send_heartbeat, args=(broadcastPort, user))
     heartbeat_sender_thread.start()
@@ -46,13 +47,13 @@ if __name__ == "__main__":
             # ignore my own messages
             if received_message.sender != user.id and received_message.action == "room":
                 roomState = roomState.from_json(received_message.body)
-                print(f"l49: Received message: {received_message.action}:{received_message.body}")
+                # print(f"Received message: {received_message.action}:{received_message.body}")
                 break
     except queue.Empty:
-        print("l52: No message received within the timeout")
+        print("No message received within the timeout")
         user.set_scrum_master(True)
         roomState = RoomState(user)
-        print("l55: You created a new Room and are the responsible Person")
+        print("You created a new Room and are the responsible Person")
 
     #BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
 
@@ -62,11 +63,14 @@ if __name__ == "__main__":
             if len(roomState.Tickets) == 0:
                 response = "Y"
             else:
-                response = input("l51: Do you want to create a Ticket?(Y/N)") # diese frage erst ab dem zweiten mal stellen, oder einen check einbauen, dass mindestens ein ticket erstellt werden muss
+                response = input("Do you want to create a Ticket?(Y/N)") # diese frage erst ab dem zweiten mal stellen, oder einen check einbauen, dass mindestens ein ticket erstellt werden muss
             if response.upper() == "Y":
-                ticketContent = input("l53: What is the task of the ticket?")
+                ticketContent = input("What is the task of the ticket?")
                 ticket: Ticket = Ticket(ticketContent)
                 roomState.Tickets.append(ticket)
+                ticketInstruction: Instruction = Instruction("ticket", json.dumps(ticket.to_dict(), indent=2), user.id)
+                message = json.dumps(ticketInstruction, default=vars)
+                middleware.send_broadcast_message(message, broadcastPort)
             else:
                 roomState.Phase = "2"
                 phaseTwoInstruction: Instruction = Instruction("phase", "2", user.id)
@@ -75,25 +79,25 @@ if __name__ == "__main__":
                 break
     else:
         while True:
+            print("Waiting for responsible person to go into phase 2")
             received_message: Instruction = broadcast_queue.get()
-            print("l65: Waiting for responsible person to go into phase 2")
             # only check for instruction phase 2
             if (received_message.action == "phase") and (received_message.body == "2"):
                 roomState.change_phase("2")
-                print("l68: Responsible person gave instruction to go into phase 2")
+                print("Responsible person gave instruction to go into phase 2")
                 break
 
-    print("l85: We are now in phase 2")
+    print("We are now in phase 2")
     for ticket in roomState.Tickets:
-        print(f"l87: We are now guessing the ticket '{ticket.content}'")
+        print(f"We are now guessing the ticket '{ticket.content}'")
         while True:
             try:
-                question = int(input("l75: What is your guess?"))
+                question = int(input("What is your guess?"))
                 break
             except:
-                print("l78: That's not a valid option!")
+                print("That's not a valid option!")
 
-    print("l80: We are done guessing the tickets, goodbye!")
+    print("We are done guessing the tickets, goodbye!")
     threadsRunning = False
     stop_queue.put(threadsRunning)
     stop_queue.put(threadsRunning)
