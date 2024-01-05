@@ -8,7 +8,7 @@ import json
 import queue
 
 
-def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queue, stopQueue: queue.Queue, roomState: RoomState, command: str = ""):
+def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queue, stopQueue: queue.Queue, roomState: RoomState, user: Person, command: str = ""):
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -20,34 +20,37 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
         data: bytes = bytes()
         addr: any
         try:
-            data, addr = udp_socket.recvfrom(1024)
+            data, addr = udp_socket.recvfrom(2048)
         except socket.timeout:
             print("Zeitüberschreitung beim Empfangen von Daten.")
             continue
-        receivedInstruction: Instruction = json.loads(data.decode(), object_hook=lambda d: Instruction(**d))
+        except socket.error as err:
+            print(f"Received error: {err}")
+        print(data.decode())
+        receivedInstruction: Instruction = Instruction(**json.loads(data.decode()))
+        print(f"receivedInstruction: {receivedInstruction.action}")
         match receivedInstruction.action:
             case "join":
                 messageQueue.put(receivedInstruction)
                 roomState.add_person(Person(receivedInstruction.body, False))
-                roomInstruction = Instruction("room", json.dumps(roomState.to_dict(), indent=2))
-                print(f"mw31: roomInstruction: {roomInstruction}")
+                roomInstruction = Instruction("room", json.dumps(roomState.to_dict(), indent=2), user.id)
                 message = json.dumps(roomInstruction, default=vars)
                 send_broadcast_message(message, 61424)
-                print(f"mw34: {receivedInstruction}")
             case "room":
                 messageQueue.put(receivedInstruction)
-                print(f"mw37: {receivedInstruction}")
             case "heartbeat":
                 heartbeatQueue.put(receivedInstruction)
-                print(f"mw40: {receivedInstruction}")
+            case "phase":
+                messageQueue.put(receivedInstruction)
             case _:
                 print(f"mw43: Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
 
 
 def send_heartbeat(port, person):
     TIME_BETWEEN_HEARTBEATS = 5
-    instruction = Instruction("heartbeat", person.id)
+    instruction = Instruction("heartbeat", person.id, person.id)
     message = json.dumps(instruction, default=vars)
+    print(f"sendin heartbeat: {message}")
     while True:
         send_broadcast_message(message, port)
         time.sleep(TIME_BETWEEN_HEARTBEATS)

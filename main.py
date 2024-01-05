@@ -22,7 +22,7 @@ if __name__ == "__main__":
     stop_queue = queue.Queue()
     heartbeat_queue = queue.Queue()
 
-    udp_listener_thread = threading.Thread(target=udp_broadcast_listener, args=(broadcast_queue, heartbeat_queue, stop_queue, roomState))
+    udp_listener_thread = threading.Thread(target=udp_broadcast_listener, args=(broadcast_queue, heartbeat_queue, stop_queue, roomState, user))
     udp_listener_thread.start()
 
     tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue,))
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     heartbeat_manager_thread.start()
 
     # send join request
-    joinInstruction = Instruction("join", user.id)
+    joinInstruction = Instruction("join", user.id, user.id)
     message = json.dumps(joinInstruction, default=vars)
     send_broadcast_message(message, broadcastPort)
 
@@ -44,18 +44,19 @@ if __name__ == "__main__":
         while True:
             received_message: Instruction = broadcast_queue.get(timeout=TIME_TIL_RESPONSE_IN_SECONDS)
             # ignore my own messages
-            if received_message.body != user.id and received_message.action == "room":
+            if received_message.sender != user.id and received_message.action == "room":
                 roomState = roomState.from_json(received_message.body)
-                print(f"l42: Received message: {received_message.action}:{received_message.body}")
+                print(f"l49: Received message: {received_message.action}:{received_message.body}")
                 break
     except queue.Empty:
-        print("l45: No message received within the timeout")
+        print("l52: No message received within the timeout")
+        user.set_scrum_master(True)
         roomState = RoomState(user)
-        print("l47: You created a new Room and are the responsible Person")
+        print("l55: You created a new Room and are the responsible Person")
 
     #BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
 
-    if roomState.Responsible.id == user.id:
+    if user.isScrumMaster:
         while True:
             response = ""
             if len(roomState.Tickets) == 0:
@@ -67,8 +68,8 @@ if __name__ == "__main__":
                 ticket: Ticket = Ticket(ticketContent)
                 roomState.Tickets.append(ticket)
             else:
-                roomState.Phase = "Phase2"
-                phaseTwoInstruction: Instruction = Instruction("Phase", "2")
+                roomState.Phase = "2"
+                phaseTwoInstruction: Instruction = Instruction("phase", "2", user.id)
                 message = json.dumps(phaseTwoInstruction, default=vars)
                 send_broadcast_message(message, broadcastPort)
                 break
@@ -77,13 +78,14 @@ if __name__ == "__main__":
             received_message: Instruction = broadcast_queue.get()
             print("l65: Waiting for responsible person to go into phase 2")
             # only check for instruction phase 2
-            if (received_message.action == "Phase") and (received_message.body == "2"):
+            if (received_message.action == "phase") and (received_message.body == "2"):
+                roomState.change_phase("2")
                 print("l68: Responsible person gave instruction to go into phase 2")
                 break
 
-    print("l70: We are now in phase 2")
+    print("l85: We are now in phase 2")
     for ticket in roomState.Tickets:
-        print(f"l72: We are now guessing the ticket '{ticket.content}'")
+        print(f"l87: We are now guessing the ticket '{ticket.content}'")
         while True:
             try:
                 question = int(input("l75: What is your guess?"))

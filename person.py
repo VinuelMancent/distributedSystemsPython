@@ -49,3 +49,7 @@ class Person:
     def remove_person_from_heartbeat_dict(self, id: str):
         with self.lock:
             self.heartbeat_dict.pop(id)
+
+    def set_scrum_master(self, scrumMaster: bool):
+        with self.lock:
+            self.isScrumMaster = scrumMaster

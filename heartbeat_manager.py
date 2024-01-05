@@ -17,19 +17,15 @@ def manage_heartbeats(heartbeat_queue: queue.Queue, person: Person, roomState: R
         for heartbeat in range(amount_of_heartbeats):
             heartbeat_instruction: Instruction = heartbeat_queue.get_nowait()
             received_heartbeats.add(heartbeat_instruction.body)
-            print(f"hm13: received heartbeat from {heartbeat_instruction.body}")
             person.update_heartbeat_dict(heartbeat_instruction.body, True)
         # check if anybody didn't send a heartbeat
         unreceived_heartbeats = get_unassigned_ids(roomState.Persons, received_heartbeats)
-        print(f"roomState.Persons: {len(roomState.Persons)}")
         for key in unreceived_heartbeats:
             person.update_heartbeat_dict(key, False)
         # check if anybody has only falses in his deque
-        print(f"length of heartbeat_dict: {len(person.heartbeat_dict)}")
         ids_to_remove: list[str] = []
         for key in person.heartbeat_dict:
             heartbeat_deque = person.heartbeat_dict[key]
-            print(f"heartbeat_deque of {key}: {heartbeat_deque}")
             if heartbeat_deque.count(False) >= MISSED_HEARTBEATS_UNTIL_DISCONNECT:
                 ids_to_remove.append(key)
         for id in ids_to_remove:
