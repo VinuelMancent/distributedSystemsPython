@@ -44,16 +44,19 @@ if __name__ == "__main__":
     # wait for response of the request
     try:
         while True:
-            received_message: Instruction = broadcast_queue.get(timeout=TIME_TIL_RESPONSE_IN_SECONDS)
+            received_message: Instruction = broadcast_queue.get(timeout=TIME_TIL_RESPONSE_IN_SECONDS) # ToDo: CAREFUL, BUG HERE: IF TWO TRY TO CREATE AT THE SAME TIME BOTH ARE NOT THE ADMIN
             # ignore my own messages
             if received_message.sender != user.id and received_message.action == "room":
-                roomState = roomState.from_json(received_message.body)
-                # print(f"Received message: {received_message.action}:{received_message.body}")
+                received_room_state = roomState.from_json(received_message.body)
+                for ticket in received_room_state.Tickets:
+                    roomState.add_ticket(ticket)
+                for person in received_room_state.Persons:
+                    roomState.add_person(person)
+                roomState.Responsible = received_room_state.get_responsible_person()
                 break
     except queue.Empty:
         print("No message received within the timeout")
         user.set_scrum_master(True)
-        roomState = RoomState(user)
         print("You created a new Room and are the responsible Person")
 
     # BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
@@ -93,6 +96,7 @@ if __name__ == "__main__":
 
     # this only works for normal user, not for responsible
     index = 0
+    print(f"We are going to guess {len(roomState.Tickets)} tickets")
     for ticket in roomState.Tickets:
         if not user.isScrumMaster:
             while True:

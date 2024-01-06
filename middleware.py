@@ -9,7 +9,8 @@ import json
 import queue
 
 
-def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queue, stopQueue: queue.Queue, roomState: RoomState, user: Person, command: str = ""):
+def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queue, stopQueue: queue.Queue,
+                           roomState: RoomState, user: Person, command: str = ""):
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -28,6 +29,8 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
         except socket.error as err:
             print(f"Received error: {err}")
         receivedInstruction: Instruction = Instruction(**json.loads(data.decode()))
+        if receivedInstruction.sender == user.id:  # ToDo: check if this works
+            continue
         match receivedInstruction.action:
             case "join":
                 messageQueue.put(receivedInstruction)
@@ -36,12 +39,14 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 message = json.dumps(roomInstruction, default=vars)
                 send_broadcast_message(message, 61424)
             case "room":
+                print("received a room instruction")
                 messageQueue.put(receivedInstruction)
             case "heartbeat":
                 heartbeatQueue.put(receivedInstruction)
             case "phase":
                 messageQueue.put(receivedInstruction)
             case "ticket":
+                print(f"Received a ticket, adding it to roomstate")
                 roomState.add_ticket(Ticket.from_json(receivedInstruction.body))
             case "guess":
                 print(receivedInstruction)
