@@ -23,16 +23,17 @@ if __name__ == "__main__":
     stop_queue = queue.Queue()
     heartbeat_queue = queue.Queue()
 
-    udp_listener_thread = threading.Thread(target=udp_broadcast_listener, args=(broadcast_queue, heartbeat_queue, stop_queue, roomState, user))
+    udp_listener_thread = threading.Thread(target=udp_broadcast_listener,
+                                           args=(broadcast_queue, heartbeat_queue, stop_queue, roomState, user))
     udp_listener_thread.start()
 
-    #tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue,))
-    #tcp_listener_thread.start()
+    # tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue,))
+    # tcp_listener_thread.start()
 
     heartbeat_sender_thread = threading.Thread(target=send_heartbeat, args=(broadcastPort, user))
     heartbeat_sender_thread.start()
 
-    heartbeat_manager_thread = threading.Thread(target= manage_heartbeats, args=(heartbeat_queue, user, roomState))
+    heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(heartbeat_queue, user, roomState))
     heartbeat_manager_thread.start()
 
     # send join request
@@ -55,7 +56,7 @@ if __name__ == "__main__":
         roomState = RoomState(user)
         print("You created a new Room and are the responsible Person")
 
-    #BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
+    # BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
 
     if user.isScrumMaster:
         while True:
@@ -63,7 +64,8 @@ if __name__ == "__main__":
             if len(roomState.Tickets) == 0:
                 response = "Y"
             else:
-                response = input("Do you want to create a Ticket?(Y/N)") # diese frage erst ab dem zweiten mal stellen, oder einen check einbauen, dass mindestens ein ticket erstellt werden muss
+                response = input(
+                    "Do you want to create a Ticket?(Y/N)")  # diese frage erst ab dem zweiten mal stellen, oder einen check einbauen, dass mindestens ein ticket erstellt werden muss
             if response.upper() == "Y":
                 ticketContent = input("What is the task of the ticket?")
                 ticket: Ticket = Ticket(ticketContent)
@@ -88,14 +90,34 @@ if __name__ == "__main__":
                 break
 
     print("We are now in phase 2")
+
+    # this only works for normal user, not for responsible
+    index = 0
     for ticket in roomState.Tickets:
-        print(f"We are now guessing the ticket '{ticket.content}'")
-        while True:
-            try:
-                question = int(input("What is your guess?"))
-                break
-            except:
-                print("That's not a valid option!")
+        if not user.isScrumMaster:
+            while True:
+                print("Waiting for responsible person to go to the next ticket")
+                received_message: Instruction = broadcast_queue.get()
+                # only check for instruction phase 2
+                if received_message.action == "next_ticket":
+                    print(f"We are now guessing the ticket '{ticket.content}'")
+                    while True:
+                        try:
+                            question = int(input("What is your guess?"))
+                            break
+                        except:
+                            print("That's not a valid option!")
+                    continue
+        else:
+            next_ticket_instruction: Instruction = Instruction("next_ticket", "", user.id)
+            message = json.dumps(next_ticket_instruction, default=vars)
+            send_broadcast_message(message, broadcastPort)
+            index += 1
+            print(f"Your team is currently guessing the ticket '{ticket.content}'")
+            if index < len(roomState.Tickets):
+                input("press Enter when you want to go to the next Ticket")
+            else:
+                input("press Enter to finish")
 
     print("We are done guessing the tickets, goodbye!")
     threadsRunning = False

@@ -1,5 +1,6 @@
 import json
 
+
 class Ticket:
     content: str
     guesses: list[int]

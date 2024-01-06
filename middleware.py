@@ -28,7 +28,6 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
         except socket.error as err:
             print(f"Received error: {err}")
         receivedInstruction: Instruction = Instruction(**json.loads(data.decode()))
-        #print(f"receivedInstruction: {receivedInstruction.action}")
         match receivedInstruction.action:
             case "join":
                 messageQueue.put(receivedInstruction)
@@ -44,6 +43,8 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 messageQueue.put(receivedInstruction)
             case "ticket":
                 roomState.add_ticket(Ticket.from_json(receivedInstruction.body))
+            case "guess":
+                print(receivedInstruction)
             case _:
                 print(f"mw43: Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
 

@@ -1,7 +1,6 @@
 import collections
 import json
 import threading
-from instruction import Instruction
 
 class Person:
     id: str
