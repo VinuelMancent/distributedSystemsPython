@@ -111,7 +111,7 @@ if __name__ == "__main__":
                             break
                         except:
                             print("That's not a valid option!")
-                    continue
+                    break
         else:
             next_ticket_instruction: Instruction = Instruction("next_ticket", "", user.id)
             message = json.dumps(next_ticket_instruction, default=vars)

@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="from admin view everything works now">
+    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="sharing rooms now works correctly (hopefully)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/middleware.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/roomState.py" beforeDir="false" afterPath="$PROJECT_DIR$/roomState.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,7 +145,7 @@
       <workItem from="1704124035344" duration="938000" />
       <workItem from="1704129026414" duration="2926000" />
       <workItem from="1704482583443" duration="5137000" />
-      <workItem from="1704564300709" duration="2720000" />
+      <workItem from="1704564300709" duration="3061000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -236,7 +235,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704565294747</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="sharing rooms now works correctly (hopefully)">
+      <option name="closed" value="true" />
+      <created>1704567069885</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1704567069885</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -265,7 +272,8 @@
     <MESSAGE value="kicking now works" />
     <MESSAGE value="creating and adding tickets now works" />
     <MESSAGE value="from admin view everything works now" />
-    <option name="LAST_COMMIT_MESSAGE" value="from admin view everything works now" />
+    <MESSAGE value="sharing rooms now works correctly (hopefully)" />
+    <option name="LAST_COMMIT_MESSAGE" value="sharing rooms now works correctly (hopefully)" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScrumPoker$instruction.coverage" NAME="instruction Coverage Results" MODIFIED="1703545325415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

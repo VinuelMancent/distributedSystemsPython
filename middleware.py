@@ -50,6 +50,8 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 roomState.add_ticket(Ticket.from_json(receivedInstruction.body))
             case "guess":
                 print(receivedInstruction)
+            case "next_ticket":
+                messageQueue.put(receivedInstruction)
             case _:
                 print(f"mw43: Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
 
