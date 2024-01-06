@@ -41,9 +41,10 @@ class Person:
     def update_heartbeat_dict(self, id: str, status: bool):
         MAX_LENGTH_OF_DEQUE = 5
         with self.lock:
-            if id not in self.heartbeat_dict:
-                self.heartbeat_dict[id] = collections.deque[bool](maxlen=MAX_LENGTH_OF_DEQUE)
-            self.heartbeat_dict[id].append(status)
+            if not id == self.id:
+                if id not in self.heartbeat_dict:
+                    self.heartbeat_dict[id] = collections.deque[bool](maxlen=MAX_LENGTH_OF_DEQUE)
+                self.heartbeat_dict[id].append(status)
 
     def remove_person_from_heartbeat_dict(self, id: str):
         with self.lock:

@@ -41,10 +41,12 @@ if __name__ == "__main__":
     message = json.dumps(joinInstruction, default=vars)
     send_broadcast_message(message, broadcastPort)
 
+    print(f"Hello user {user.id}")
     # wait for response of the request
     try:
         while True:
-            received_message: Instruction = broadcast_queue.get(timeout=TIME_TIL_RESPONSE_IN_SECONDS) # ToDo: CAREFUL, BUG HERE: IF TWO TRY TO CREATE AT THE SAME TIME BOTH ARE NOT THE ADMIN
+            received_message: Instruction = broadcast_queue.get(
+                timeout=TIME_TIL_RESPONSE_IN_SECONDS)  # ToDo: CAREFUL, BUG HERE: IF TWO TRY TO CREATE AT THE SAME TIME BOTH ARE NOT THE ADMIN
             # ignore my own messages
             if received_message.sender != user.id and received_message.action == "room":
                 received_room_state = roomState.from_json(received_message.body)
