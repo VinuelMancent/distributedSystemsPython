@@ -22,9 +22,10 @@ if __name__ == "__main__":
     broadcast_queue = queue.Queue()
     stop_queue = queue.Queue()
     heartbeat_queue = queue.Queue()
+    room_queue = queue.Queue()
 
     udp_listener_thread = threading.Thread(target=udp_broadcast_listener,
-                                           args=(broadcast_queue, heartbeat_queue, stop_queue, roomState, user))
+                                           args=(broadcast_queue, heartbeat_queue, room_queue, stop_queue, roomState, user))
     udp_listener_thread.start()
 
     # tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue,))
@@ -45,8 +46,8 @@ if __name__ == "__main__":
     # wait for response of the request
     try:
         while True:
-            received_message: Instruction = broadcast_queue.get(
-                timeout=TIME_TIL_RESPONSE_IN_SECONDS)  # ToDo: CAREFUL, BUG HERE: IF TWO TRY TO CREATE AT THE SAME TIME BOTH ARE NOT THE ADMIN
+            received_message: Instruction = room_queue.get(
+                timeout=TIME_TIL_RESPONSE_IN_SECONDS)
             # ignore my own messages
             if received_message.sender != user.id and received_message.action == "room":
                 received_room_state = roomState.from_json(received_message.body)

@@ -9,7 +9,7 @@ import json
 import queue
 
 
-def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queue, stopQueue: queue.Queue,
+def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queue, roomQueue: queue.Queue, stopQueue: queue.Queue,
                            roomState: RoomState, user: Person, command: str = ""):
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -40,7 +40,7 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 send_broadcast_message(message, 61424)
             case "room":
                 print("received a room instruction")
-                messageQueue.put(receivedInstruction)
+                roomQueue.put(receivedInstruction)
             case "heartbeat":
                 heartbeatQueue.put(receivedInstruction)
             case "phase":
