@@ -4,14 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="added a queue only for room responses so that joining works even when other messages arrive">
-      <change afterPath="$PROJECT_DIR$/lcr.py" afterDir="false" />
+    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="uff">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heartbeat_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/heartbeat_manager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/middleware.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/person.py" beforeDir="false" afterPath="$PROJECT_DIR$/person.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/roomState.py" beforeDir="false" afterPath="$PROJECT_DIR$/roomState.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,7 +153,8 @@
       <workItem from="1705591328498" duration="5105000" />
       <workItem from="1705674194353" duration="5463000" />
       <workItem from="1705749704796" duration="107000" />
-      <workItem from="1705750256439" duration="1911000" />
+      <workItem from="1705750256439" duration="7157000" />
+      <workItem from="1705772974828" duration="796000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -278,7 +276,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705502234028</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="uff">
+      <option name="closed" value="true" />
+      <created>1705752269807</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1705752269807</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -310,7 +316,8 @@
     <MESSAGE value="sharing rooms now works correctly (hopefully)" />
     <MESSAGE value="The full process now runs, but not every network feature works" />
     <MESSAGE value="added a queue only for room responses so that joining works even when other messages arrive" />
-    <option name="LAST_COMMIT_MESSAGE" value="added a queue only for room responses so that joining works even when other messages arrive" />
+    <MESSAGE value="uff" />
+    <option name="LAST_COMMIT_MESSAGE" value="uff" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScrumPoker$instruction.coverage" NAME="instruction Coverage Results" MODIFIED="1703545325415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

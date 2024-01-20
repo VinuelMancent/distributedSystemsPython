@@ -21,7 +21,7 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
         data: bytes = bytes()
         addr: any
         try:
-            data, addr = udp_socket.recvfrom(2048)
+            data, addr = udp_socket.recvfrom(4096)
         except socket.timeout:
             print("Zeitüberschreitung beim Empfangen von Daten.")
             continue
@@ -33,7 +33,9 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
         match receivedInstruction.action:
             case "join":
                 messageQueue.put(receivedInstruction)
-                roomState.add_person(Person(receivedInstruction.body, False))
+                person_to_add = Person.from_json(receivedInstruction.body)
+                roomState.add_person(person_to_add)
+                print(person_to_add)
                 roomInstruction = Instruction("room", json.dumps(roomState.to_dict(), indent=2), user.id)
                 message = json.dumps(roomInstruction, default=vars)
                 send_broadcast_message(message, 61424)
@@ -59,12 +61,7 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 for person in roomState.Persons:
                     if person.id == sender:
                         person.set_port(received_port, False)
-                ## DEBUG
-                print('###############################')
-                for person in roomState.Persons:
-                    print(f"{person.id}:{person.port}")
-                print('###############################')
-                ## AYYYYYYYYYYYYYYY
+
             case _:
                 print(f"mw43: Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
 
@@ -102,9 +99,8 @@ def tcp_unicast_listener(stopQueue: queue.Queue, person: Person, electionQueue: 
                 # Empfange Daten vom Client
                 data = client_socket.recv(1024)
                 receivedInstruction: Instruction = Instruction(**json.loads(data.decode()))
+                print(f"received Instruction from unicast: {receivedInstruction}")
                 electionQueue.put(receivedInstruction)
-                # Sende eine Antwort an den Client
-                client_socket.sendall(b'Hello, world!')
             except:
                 print("Timeout beim Empfangen von Daten.")
                 break

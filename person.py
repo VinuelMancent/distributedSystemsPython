@@ -20,28 +20,28 @@ class Person:
         self.lock = threading.Lock()
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id}:{self.port}"
 
     def to_dict(self):
-        def serialize_deque(d):
-            if isinstance(d, collections.deque):
-                return list(d)
-            else:
-                return d
-
-        return {
-            "id": self.id,
-            "isScrumMaster": self.isScrumMaster,
-            "heartbeat_dict": {k: serialize_deque(v) for k, v in self.heartbeat_dict.items()},
-            "port": self.port
-        }
+        with self.lock:
+            def serialize_deque(d):
+                if isinstance(d, collections.deque):
+                    return list(d)
+                else:
+                    return d
+            print(f"my port is {self.port}")
+            return {
+                "id": self.id,
+                "isScrumMaster": self.isScrumMaster,
+                "port": self.port
+            }
 
     @classmethod
     def from_json(cls, json_string):
         person_dict = json.loads(json_string)
         id = person_dict["id"]
         isScrumMaster = person_dict["isScrumMaster"]
-        heartbeat_dict = {k: collections.deque(v) for k, v in person_dict["heartbeat_dict"].items()}
+        heartbeat_dict = {}
         port = person_dict["port"]
         return Person(id, isScrumMaster, heartbeat_dict, port)
 
@@ -62,8 +62,12 @@ class Person:
             self.isScrumMaster = scrumMaster
 
     def set_port(self, port: int, send: bool):
-        print(f"setting port {port} for {self.id}")
-        if send and port != self.port:
-            new_port_instruction: Instruction = Instruction("port", {"port": port}, self.id)
-            middleware.send_broadcast_message(json.dumps(new_port_instruction, default=vars), 61424)
-        self.port = port
+        with self.lock:
+            if port != 0:
+                print(f"setting port {port} for {self.id}")
+                if send and port != self.port:
+                    new_port_instruction: Instruction = Instruction("port", {"port": port}, self.id)
+                    middleware.send_broadcast_message(json.dumps(new_port_instruction, default=vars), 61424)
+                self.port = port
+            else:
+                print("won't set port to 0")

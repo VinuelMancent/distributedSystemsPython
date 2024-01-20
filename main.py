@@ -39,7 +39,7 @@ if __name__ == "__main__":
     election_thread = threading.Thread(target=elect, args=(user, election_queue, tcp_queue, roomState)).start()
 
     # send join request
-    joinInstruction = Instruction("join", user.id, user.id)
+    joinInstruction = Instruction("join", json.dumps(user.to_dict(), indent=2), user.id)
     message = json.dumps(joinInstruction, default=vars)
     send_broadcast_message(message, broadcastPort)
 
