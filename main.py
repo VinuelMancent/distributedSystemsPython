@@ -12,8 +12,9 @@ from instruction import Instruction
 from heartbeat_manager import manage_heartbeats
 import threading
 import queue
+from lcr import *
 
-TIME_TIL_RESPONSE_IN_SECONDS = 5
+TIME_TIL_RESPONSE_IN_SECONDS = 0.5
 
 if __name__ == "__main__":
     user = Person(str(uuid.uuid4()), False)
@@ -23,26 +24,26 @@ if __name__ == "__main__":
     stop_queue = queue.Queue()
     heartbeat_queue = queue.Queue()
     room_queue = queue.Queue()
+    election_queue = queue.Queue()
+    tcp_queue = queue.Queue()
 
     udp_listener_thread = threading.Thread(target=udp_broadcast_listener,
-                                           args=(broadcast_queue, heartbeat_queue, room_queue, stop_queue, roomState, user))
-    udp_listener_thread.start()
+                                           args=(broadcast_queue, heartbeat_queue, room_queue, election_queue, stop_queue, roomState, user)).start()
 
-    # tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue,))
-    # tcp_listener_thread.start()
+    tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue, user, 5)).start()
 
-    heartbeat_sender_thread = threading.Thread(target=send_heartbeat, args=(broadcastPort, user))
-    heartbeat_sender_thread.start()
+    heartbeat_sender_thread = threading.Thread(target=send_heartbeat, args=(broadcastPort, user)).start()
 
-    heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(heartbeat_queue, user, roomState))
-    heartbeat_manager_thread.start()
+    heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(heartbeat_queue, user, roomState)).start()
+
+    election_thread = threading.Thread(target=elect, args=(user, election_queue, tcp_queue, roomState)).start()
 
     # send join request
     joinInstruction = Instruction("join", user.id, user.id)
     message = json.dumps(joinInstruction, default=vars)
     send_broadcast_message(message, broadcastPort)
 
-    print(f"Hello user {user.id}")
+    print(f"Hello user {user.id} with port {user.port}")
     # wait for response of the request
     try:
         while True:
@@ -54,16 +55,17 @@ if __name__ == "__main__":
                 for ticket in received_room_state.Tickets:
                     roomState.add_ticket(ticket)
                 for person in received_room_state.Persons:
+                    print(f"adding Person: {person.id}")
                     roomState.add_person(person)
                 roomState.Responsible = received_room_state.get_responsible_person()
                 break
     except queue.Empty:
         print("No message received within the timeout")
         user.set_scrum_master(True)
+        roomState.add_person(user)
         print("You created a new Room and are the responsible Person")
 
     # BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
-
     if user.isScrumMaster:
         while True:
             response = ""

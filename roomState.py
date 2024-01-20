@@ -1,7 +1,10 @@
 import json
 import logging
+
+import middleware
 from person import Person
 from ticket import Ticket
+from instruction import Instruction
 import threading
 
 
@@ -33,13 +36,19 @@ class RoomState:
         with self.lock:
             self.Persons.append(person)
 
-    def kick_person(self, id):
+    def kick_person(self, id: str, user: Person):
         with self.lock:
             logging.debug(f"kicking person {id}")
             for person in self.Persons:
                 if person.id == id:
                     logging.debug(f"kicking {person}")
                     self.Persons.remove(person)
+                    if person.isScrumMaster and len(self.Persons) > 1:
+                        elect_instruction: Instruction = Instruction("election", f"highest_id:{user.id}", user.id)
+                        middleware.send_broadcast_message(json.dumps(elect_instruction, default=vars), 61424)
+                    elif person.isScrumMaster and len(self.Persons) == 1:
+                        print("You are now the responsible person")
+                        self.set_responsible_person(user)
 
     def add_ticket(self, ticket):
         with self.lock:
@@ -53,3 +62,11 @@ class RoomState:
     def get_responsible_person(self):
         with self.lock:
             return self.Responsible
+
+    def set_responsible_person(self, id: str):
+        with self.lock:
+            new_responsible_person: Person
+            for person in self.Persons:
+                if person.id == id:
+                    new_responsible_person = person
+            self.Responsible = new_responsible_person
