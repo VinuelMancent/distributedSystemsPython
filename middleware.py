@@ -35,12 +35,10 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 messageQueue.put(receivedInstruction)
                 person_to_add = Person.from_json(receivedInstruction.body)
                 roomState.add_person(person_to_add)
-                print(person_to_add)
                 roomInstruction = Instruction("room", json.dumps(roomState.to_dict(), indent=2), user.id)
                 message = json.dumps(roomInstruction, default=vars)
                 send_broadcast_message(message, 61424)
             case "room":
-                print("received a room instruction")
                 roomQueue.put(receivedInstruction)
             case "heartbeat":
                 heartbeatQueue.put(receivedInstruction)
@@ -57,11 +55,12 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
             case "port":
                 received_port: int = receivedInstruction.body["port"]
                 sender: str = receivedInstruction.sender
-                print(f"setting port {received_port} for person {sender}")
                 for person in roomState.Persons:
                     if person.id == sender:
                         person.set_port(received_port, False)
-
+            case "kick":
+                id_to_kick: str = receivedInstruction.body
+                roomState.kick_person(id_to_kick, user)
             case _:
                 print(f"mw43: Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
 
@@ -83,35 +82,36 @@ def send_broadcast_message(message, port):
 
 
 def tcp_unicast_listener(stopQueue: queue.Queue, person: Person, electionQueue: queue.Queue, seconds_until_problem: int = 5):
-    print("TCP Unicast Listener gestartet.")
     while True:
-        tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tcp_socket.bind(('0.0.0.0', person.port))
-        port = tcp_socket.getsockname()[1]
-        person.set_port(port, True)
-        tcp_socket.listen(1)
-        # tcp_socket.settimeout(seconds_until_problem)
-        while stopQueue.qsize() == 0:
-            try:
-                # Akzeptiere eine eingehende Verbindung
-                client_socket, address = tcp_socket.accept()
-                print(f'Connection from {address[0]}:{address[1]}')
-                # Empfange Daten vom Client
-                data = client_socket.recv(1024)
-                receivedInstruction: Instruction = Instruction(**json.loads(data.decode()))
-                print(f"received Instruction from unicast: {receivedInstruction}")
-                electionQueue.put(receivedInstruction)
-            except:
-                print("Timeout beim Empfangen von Daten.")
-                break
+        print("TCP Unicast Listener gestartet.")
+        while True:
+            tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            tcp_socket.bind(('0.0.0.0', person.port))
+            port = tcp_socket.getsockname()[1]
+            person.set_port(port, True)
+            tcp_socket.listen(1)
+            while stopQueue.qsize() == 0:
+                try:
+                    # Akzeptiere eine eingehende Verbindung
+                    client_socket, address = tcp_socket.accept()
+                    #print(f'Connection from {address[0]}:{address[1]}')
+                    # Empfange Daten vom Client
+                    data = client_socket.recv(1024)
+                    receivedInstruction: Instruction = Instruction(**json.loads(data.decode()))
+                    #print(f"received Instruction from unicast: {receivedInstruction}")
+                    electionQueue.put(receivedInstruction)
+                except:
+                    #print("Timeout beim Empfangen von Daten.")
+                    break
 
 
 def tcp_unicast_sender(ip_address: str, port: int, message: str):
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        print(f"trying to connect to {ip_address}:{port}")
+        #print(f"trying to connect to {ip_address}:{port}")
         tcp_socket.connect((ip_address, port))
-        tcp_socket.sendall(message)
+        tcp_socket.sendall(message.encode('utf-8'))
+        #print(f"sent message: {message}")
     except Exception as e:
         print(f"Error occurred while sending message: {e}")
     finally:

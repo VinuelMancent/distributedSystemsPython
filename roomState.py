@@ -53,7 +53,6 @@ class RoomState:
     def add_ticket(self, ticket):
         with self.lock:
             self.Tickets.append(ticket)
-            print(f"adding ticket {ticket.content}, we currently have {len(self.Tickets)} tickets")
 
     def change_phase(self, new_phase):
         with self.lock:

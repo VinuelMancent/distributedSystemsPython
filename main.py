@@ -25,7 +25,6 @@ if __name__ == "__main__":
     heartbeat_queue = queue.Queue()
     room_queue = queue.Queue()
     election_queue = queue.Queue()
-    tcp_queue = queue.Queue()
 
     udp_listener_thread = threading.Thread(target=udp_broadcast_listener,
                                            args=(broadcast_queue, heartbeat_queue, room_queue, election_queue, stop_queue, roomState, user)).start()
@@ -36,7 +35,7 @@ if __name__ == "__main__":
 
     heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(heartbeat_queue, user, roomState)).start()
 
-    election_thread = threading.Thread(target=elect, args=(user, election_queue, tcp_queue, roomState)).start()
+    election_thread = threading.Thread(target=elect, args=(user, election_queue, roomState)).start()
 
     # send join request
     joinInstruction = Instruction("join", json.dumps(user.to_dict(), indent=2), user.id)
@@ -55,7 +54,6 @@ if __name__ == "__main__":
                 for ticket in received_room_state.Tickets:
                     roomState.add_ticket(ticket)
                 for person in received_room_state.Persons:
-                    print(f"adding Person: {person.id}")
                     roomState.add_person(person)
                 roomState.Responsible = received_room_state.get_responsible_person()
                 break
@@ -89,7 +87,7 @@ if __name__ == "__main__":
                 break
     else:
         while True:
-            print("Waiting for responsible person to go into phase 2")
+            print("Waiting for responsible person to go into phase 2") # ToDo: Das hier abkapseln, beim Empfangen einer neuen Nachricht wird das hier immer wieder ausgegeben
             received_message: Instruction = broadcast_queue.get()
             # only check for instruction phase 2
             if (received_message.action == "phase") and (received_message.body == "2"):

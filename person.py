@@ -29,7 +29,6 @@ class Person:
                     return list(d)
                 else:
                     return d
-            print(f"my port is {self.port}")
             return {
                 "id": self.id,
                 "isScrumMaster": self.isScrumMaster,
@@ -64,7 +63,7 @@ class Person:
     def set_port(self, port: int, send: bool):
         with self.lock:
             if port != 0:
-                print(f"setting port {port} for {self.id}")
+                print(f"changing port for {self.id} to {port}")
                 if send and port != self.port:
                     new_port_instruction: Instruction = Instruction("port", {"port": port}, self.id)
                     middleware.send_broadcast_message(json.dumps(new_port_instruction, default=vars), 61424)
