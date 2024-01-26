@@ -107,18 +107,21 @@ if __name__ == "__main__":
 
     print("We are now in phase 2")
 
-    # this only works for normal user, not for responsible
-    index = 0
     print(f"We are going to guess {len(roomState.Tickets)} tickets")
-    for index in range(len(roomState.Tickets)):
+    index: int = 0
+    while index < len(roomState.Tickets):
+        print(f"index at beginning is {index}")
         if not user.isScrumMaster:
             while True:
-                print("Waiting for responsible person to go to the next ticket") # wird wieder mehrfach ausgegeben je nach user index
+                if index != 0:
+                    print("Waiting for responsible person to go to the next ticket") # wird wieder mehrfach ausgegeben je nach user index
                 received_message: Instruction = broadcast_queue.get()
                 # only check for instruction phase 2
                 if received_message.action == "next_ticket":
+                    print(f"getting ticket with index {index}: {roomState.Tickets[index]}")
                     ticket = roomState.Tickets[index]
                     index += 1
+                    print(f"increased index to {index}")
                     print(f"We are now guessing the ticket '{ticket.content}'")
                     while True:
                         try:
@@ -126,16 +129,23 @@ if __name__ == "__main__":
                             break
                         except:
                             print("That's not a valid option!")
+                    try:
+                        received_message: Instruction = broadcast_queue.get_nowait()
+                        if received_message.action == "redo":
+                            index = index - 1
+                            print(f"decreased index to {index}")
+                            print("redoing a ticket")
+                    finally:
+                        break
                     break
-                elif received_message.action == "redo":
-                    print("redoing a ticket")
-                    break
+
         else:
             ticket = roomState.Tickets[index]
             next_ticket_instruction: Instruction = Instruction("next_ticket", "", user.id)
             message = json.dumps(next_ticket_instruction, default=vars)
             send_broadcast_message(message, broadcastPort)
             index += 1
+            print(f"increased index to {index} as leader")
             print(f"Your team is currently guessing the ticket '{ticket.content}'")
             if index < len(roomState.Tickets):
                 input("press Enter when you want to go to the next Ticket")

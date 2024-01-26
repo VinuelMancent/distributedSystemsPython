@@ -11,7 +11,7 @@ import threading
 
 
 class RoomState:
-    def __init__(self, responsible_person: Person, persons=None, tickets=None, phase="Phase1"):
+    def __init__(self, responsible_person: Person, persons=None, tickets=None, phase="1"):
         self.Persons = persons or []
         self.Tickets = tickets or []
         self.Phase = phase
