@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="phase 2 for not new leaders works, new leader is still ahead">
+    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="phase 2 works">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lcr.py" beforeDir="false" afterPath="$PROJECT_DIR$/lcr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
@@ -160,7 +160,8 @@
       <workItem from="1706261479878" duration="1371000" />
       <workItem from="1706280969500" duration="7050000" />
       <workItem from="1706289861626" duration="2058000" />
-      <workItem from="1706292884912" duration="2369000" />
+      <workItem from="1706292884912" duration="2595000" />
+      <workItem from="1706305084008" duration="2367000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -346,7 +347,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706295167061</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="phase 2 works">
+      <option name="closed" value="true" />
+      <created>1706295418276</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1706295418276</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -386,7 +395,8 @@
     <MESSAGE value="new leader now can add tickets when in phase 1, but when first one drops out everyone gets kicked" />
     <MESSAGE value="phase 2 nearly works as well" />
     <MESSAGE value="phase 2 for not new leaders works, new leader is still ahead" />
-    <option name="LAST_COMMIT_MESSAGE" value="phase 2 for not new leaders works, new leader is still ahead" />
+    <MESSAGE value="phase 2 works" />
+    <option name="LAST_COMMIT_MESSAGE" value="phase 2 works" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScrumPoker$instruction.coverage" NAME="instruction Coverage Results" MODIFIED="1703545325415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

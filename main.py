@@ -2,7 +2,6 @@ import json
 import sys
 import time
 import uuid
-
 import middleware
 from middleware import udp_broadcast_listener, send_broadcast_message, send_heartbeat, tcp_unicast_listener
 from person import Person
@@ -12,7 +11,7 @@ from instruction import Instruction
 from heartbeat_manager import manage_heartbeats
 import threading
 import queue
-from lcr import *
+from lcr import elect
 
 TIME_TIL_RESPONSE_IN_SECONDS = 0.5
 
@@ -56,54 +55,58 @@ if __name__ == "__main__":
                     roomState.add_ticket(ticket)
                 for person in received_room_state.Persons:
                     roomState.add_person(person)
-                roomState.Responsible = received_room_state.get_responsible_person()
+                #roomState.Responsible = received_room_state.get_responsible_person()
+                roomState.set_responsible_person(received_room_state.get_responsible_person().id)
+                roomState.Phase = received_room_state.Phase
                 break
+
     except queue.Empty:
         user.set_scrum_master(True)
         roomState.add_person(user)
         print("You created a new Room and are the responsible Person")
 
-    # BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
-    while True:
-        leave_outer_loop = False
-        if user.isScrumMaster:
-            response = ""
-            if len(roomState.Tickets) == 0:
-                response = "Y"
-            else:
-                response = input("Do you want to create a Ticket?(Y/N)")
-            if response.upper() == "Y":
-                ticketContent = input("What is the task of the ticket?")
-                ticket: Ticket = Ticket(ticketContent)
-                roomState.Tickets.append(ticket)
-                ticketInstruction: Instruction = Instruction("ticket", json.dumps(ticket.to_dict(), indent=2), user.id)
-                message = json.dumps(ticketInstruction, default=vars)
-                middleware.send_broadcast_message(message, broadcastPort)
-            else:
-                roomState.Phase = "2"
-                phaseTwoInstruction: Instruction = Instruction("phase", "2", user.id)
-                message = json.dumps(phaseTwoInstruction, default=vars)
-                send_broadcast_message(message, broadcastPort)
-                break
-        else:
-            print("Waiting for responsible person to go into phase 2")
-            while True:
-                received_message: Instruction = phase_queue.get()
-                # only check for instruction phase 2
-                if (received_message.action == "phase") and (received_message.body == "2"):
-                    roomState.change_phase("2")
-                    print("Responsible person gave instruction to go into phase 2")
-                    leave_outer_loop = True
-                    break
-                elif received_message.action == "redo":
-                    break
+    if roomState.Phase == "1":
+        # BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
+        while True:
+            leave_outer_loop = False
+            if user.isScrumMaster:
+                response = ""
+                if len(roomState.Tickets) == 0:
+                    response = "Y"
                 else:
-                    print("received something else")
-                    continue
+                    response = input("Do you want to create a Ticket?(Y/N)")
+                if response.upper() == "Y":
+                    ticketContent = input("What is the task of the ticket?")
+                    ticket: Ticket = Ticket(ticketContent)
+                    roomState.Tickets.append(ticket)
+                    ticketInstruction: Instruction = Instruction("ticket", json.dumps(ticket.to_dict(), indent=2), user.id)
+                    message = json.dumps(ticketInstruction, default=vars)
+                    middleware.send_broadcast_message(message, broadcastPort)
+                else:
+                    roomState.Phase = "2"
+                    phaseTwoInstruction: Instruction = Instruction("phase", "2", user.id)
+                    message = json.dumps(phaseTwoInstruction, default=vars)
+                    send_broadcast_message(message, broadcastPort)
+                    break
             else:
-                continue
-            if leave_outer_loop:
-                break
+                print("Waiting for responsible person to go into phase 2")
+                while True:
+                    received_message: Instruction = phase_queue.get()
+                    # only check for instruction phase 2
+                    if (received_message.action == "phase") and (received_message.body == "2"):
+                        roomState.change_phase("2")
+                        print("Responsible person gave instruction to go into phase 2")
+                        leave_outer_loop = True
+                        break
+                    elif received_message.action == "redo":
+                        break
+                    else:
+                        print("received something else")
+                        continue
+                else:
+                    continue
+                if leave_outer_loop:
+                    break
 
     print("We are now in phase 2")
 
