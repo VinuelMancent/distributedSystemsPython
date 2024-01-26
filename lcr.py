@@ -7,7 +7,7 @@ import queue
 from roomState import RoomState
 
 
-def elect(user: Person, electQueue: queue.Queue, phase_queue: queue.Queue, roomState: RoomState):
+def elect(user: Person, electQueue: queue.Queue, phase_queue: queue.Queue, broadcast_queue: queue.Queue, roomState: RoomState):
     highest_id: str = user.id
     next_person: Person = None
     while True: # ToDo: Idea: what if we do two while True loops so that after a successful election it can elect again?
@@ -33,6 +33,7 @@ def elect(user: Person, electQueue: queue.Queue, phase_queue: queue.Queue, roomS
                 middleware.send_broadcast_message(json.dumps(elected_instruction, default=vars), 61424)
                 print("I WAS ELECTED!!!!!!!!!!!!!!!!")
                 redo_instruction: Instruction = Instruction("redo", "", user.id)
+                broadcast_queue.put(redo_instruction)
                 middleware.send_broadcast_message(json.dumps(redo_instruction, default=vars), 61424)
                 phase_queue.put(redo_instruction)
                 break

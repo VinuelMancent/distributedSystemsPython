@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(heartbeat_queue, user, roomState, election_queue, phase_queue)).start()
 
-    election_thread = threading.Thread(target=elect, args=(user, election_queue, phase_queue, roomState)).start()
+    election_thread = threading.Thread(target=elect, args=(user, election_queue, phase_queue, broadcast_queue, roomState)).start()
 
     # send join request
     joinInstruction = Instruction("join", json.dumps(user.to_dict(), indent=2), user.id)
