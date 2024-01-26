@@ -8,12 +8,12 @@ import json
 import queue
 
 
-def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queue, roomQueue: queue.Queue, electionQueue: queue.Queue, stopQueue: queue.Queue,
+def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queue, roomQueue: queue.Queue, electionQueue: queue.Queue, phase_queue: queue.Queue, stopQueue: queue.Queue,
                            roomState: RoomState, user: Person, command: str = ""):
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    udp_socket.settimeout(5)
+    udp_socket.settimeout(5) #  kann das timeout einfach rausgelassen werden?
     udp_socket.bind(('0.0.0.0', 61424))
     while stopQueue.qsize() == 0:
         data: bytes = bytes()
@@ -41,7 +41,7 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
             case "heartbeat":
                 heartbeatQueue.put(receivedInstruction)
             case "phase":
-                messageQueue.put(receivedInstruction)
+                phase_queue.put(receivedInstruction)
             case "ticket":
                 roomState.add_ticket(Ticket.from_json(receivedInstruction.body))
             case "guess":
@@ -60,7 +60,9 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                         person.set_port(received_port, False)
             case "kick":
                 id_to_kick: str = receivedInstruction.body
-                roomState.kick_person(id_to_kick, user, electionQueue)
+                roomState.kick_person(id_to_kick, user, electionQueue, phase_queue)
+            case "redo":
+                phase_queue.put(receivedInstruction)
             case _:
                 print(f"Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
 
@@ -92,11 +94,9 @@ def tcp_unicast_listener(stopQueue: queue.Queue, person: Person, electionQueue: 
             try:
                 # Akzeptiere eine eingehende Verbindung
                 client_socket, address = tcp_socket.accept()
-                print(f'Connection from {address[0]}:{address[1]}')
                 # Empfange Daten vom Client
                 data = client_socket.recv(1024)
                 receivedInstruction: Instruction = Instruction(**json.loads(data.decode()))
-                print(f"received Instruction from id: {receivedInstruction.sender}")
                 electionQueue.put(receivedInstruction)
                 client_socket.close()
             except Exception as ex:
@@ -107,10 +107,7 @@ def tcp_unicast_listener(stopQueue: queue.Queue, person: Person, electionQueue: 
 def tcp_unicast_sender(ip_address: str, port: int, message: str):
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        print(f"trying to connect to {ip_address}:{port}")
         tcp_socket.connect((ip_address, port))
         tcp_socket.sendall(message.encode('utf-8'))
-    except Exception as e:
-        print(f"Error occurred while sending message: {e}")
     finally:
         tcp_socket.close()

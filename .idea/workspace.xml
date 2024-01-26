@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="uff3">
+    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="lcr finally works">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heartbeat_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/heartbeat_manager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lcr.py" beforeDir="false" afterPath="$PROJECT_DIR$/lcr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/middleware.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/person.py" beforeDir="false" afterPath="$PROJECT_DIR$/person.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/roomState.py" beforeDir="false" afterPath="$PROJECT_DIR$/roomState.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -79,9 +78,10 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Users\Vincent\AppData\Local\Microsoft\WindowsApps\python3.11.exe" />
+      <option name="SDK_NAME" value="Python 3.11" />
       <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
@@ -160,7 +160,8 @@
       <workItem from="1705772974828" duration="809000" />
       <workItem from="1705939389170" duration="4242000" />
       <workItem from="1706200591147" duration="4413000" />
-      <workItem from="1706261479878" duration="1285000" />
+      <workItem from="1706261479878" duration="1371000" />
+      <workItem from="1706280969500" duration="4390000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -306,7 +307,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705943707583</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="lcr finally works">
+      <option name="closed" value="true" />
+      <created>1706262867101</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1706262867101</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -341,12 +350,13 @@
     <MESSAGE value="uff" />
     <MESSAGE value="uff2" />
     <MESSAGE value="uff3" />
-    <option name="LAST_COMMIT_MESSAGE" value="uff3" />
+    <MESSAGE value="lcr finally works" />
+    <option name="LAST_COMMIT_MESSAGE" value="lcr finally works" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScrumPoker$instruction.coverage" NAME="instruction Coverage Results" MODIFIED="1703545325415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ScrumPoker$main.coverage" NAME="main Coverage Results" MODIFIED="1704124417858" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/ScrumPoker$middleware.coverage" NAME="middleware Coverage Results" MODIFIED="1703543306028" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/distributedSystemsPython$main.coverage" NAME="main Coverage Results" MODIFIED="1704297129983" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/distributedSystemsPython$main.coverage" NAME="main Coverage Results" MODIFIED="1706283593161" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

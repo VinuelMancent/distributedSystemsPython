@@ -25,17 +25,18 @@ if __name__ == "__main__":
     heartbeat_queue = queue.Queue()
     room_queue = queue.Queue()
     election_queue = queue.Queue()
+    phase_queue = queue.Queue()
 
     udp_listener_thread = threading.Thread(target=udp_broadcast_listener,
-                                           args=(broadcast_queue, heartbeat_queue, room_queue, election_queue, stop_queue, roomState, user)).start()
+                                           args=(broadcast_queue, heartbeat_queue, room_queue, election_queue, phase_queue, stop_queue, roomState, user)).start()
 
     tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue, user, election_queue, 5)).start()
 
     heartbeat_sender_thread = threading.Thread(target=send_heartbeat, args=(broadcastPort, user)).start()
 
-    heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(heartbeat_queue, user, roomState, election_queue)).start()
+    heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(heartbeat_queue, user, roomState, election_queue, phase_queue)).start()
 
-    election_thread = threading.Thread(target=elect, args=(user, election_queue, roomState)).start()
+    election_thread = threading.Thread(target=elect, args=(user, election_queue, phase_queue, roomState)).start()
 
     # send join request
     joinInstruction = Instruction("join", json.dumps(user.to_dict(), indent=2), user.id)
@@ -63,14 +64,15 @@ if __name__ == "__main__":
         print("You created a new Room and are the responsible Person")
 
     # BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
-    if user.isScrumMaster:
-        while True:
+    while True:
+        print("outer while true")
+        if user.isScrumMaster:
             response = ""
             if len(roomState.Tickets) == 0:
                 response = "Y"
             else:
                 response = input(
-                    "Do you want to create a Ticket?(Y/N)")  # diese frage erst ab dem zweiten mal stellen, oder einen check einbauen, dass mindestens ein ticket erstellt werden muss
+                    "Do you want to create a Ticket?(Y/N)")
             if response.upper() == "Y":
                 ticketContent = input("What is the task of the ticket?")
                 ticket: Ticket = Ticket(ticketContent)
@@ -84,22 +86,28 @@ if __name__ == "__main__":
                 message = json.dumps(phaseTwoInstruction, default=vars)
                 send_broadcast_message(message, broadcastPort)
                 break
-    else:
-        while True:
-            print("Waiting for responsible person to go into phase 2") # ToDo: Das hier abkapseln, beim Empfangen einer neuen Nachricht wird das hier immer wieder ausgegeben
-            received_message: Instruction = broadcast_queue.get()
-            # only check for instruction phase 2
-            if (received_message.action == "phase") and (received_message.body == "2"):
-                roomState.change_phase("2")
-                print("Responsible person gave instruction to go into phase 2")
-                break
+        else:
+            print("Waiting for responsible person to go into phase 2")
+            while True:
+                print("inner else while true")
+                received_message: Instruction = phase_queue.get()
+                # only check for instruction phase 2
+                if (received_message.action == "phase") and (received_message.body == "2"):
+                    roomState.change_phase("2")
+                    print("Responsible person gave instruction to go into phase 2")
+                    break
+                elif received_message.action == "redo":
+                    break
+                else:
+                    print("received something else")
+                    continue
 
     print("We are now in phase 2")
 
     # this only works for normal user, not for responsible
     index = 0
     print(f"We are going to guess {len(roomState.Tickets)} tickets")
-    for ticket in roomState.Tickets:
+    for ticket in roomState.Tickets: # idee: Anstatt dieser for each schleife eine for schleife mit index machen, bei redo command wird der gleiche index genommen
         if not user.isScrumMaster:
             while True:
                 print("Waiting for responsible person to go to the next ticket")

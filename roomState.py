@@ -1,6 +1,7 @@
 import json
 import logging
 import queue
+import string
 
 import middleware
 from person import Person
@@ -37,19 +38,21 @@ class RoomState:
         with self.lock:
             self.Persons.append(person)
 
-    def kick_person(self, id: str, user: Person, electQueue: queue.Queue):
-        with self.lock:
-            logging.debug(f"kicking person {id}")
-            for person in self.Persons:
-                if person.id == id:
-                    logging.debug(f"kicking {person}")
-                    self.Persons.remove(person)
-                    if person.isScrumMaster and len(self.Persons) > 1:
-                        elect_instruction: Instruction = Instruction("elect", f"highest_id:{0}", user.id) # ToDo: Achtung! Hierdurch denkt jeder er sei der neue Leader
-                        electQueue.put(elect_instruction)
-                    elif person.isScrumMaster and len(self.Persons) == 1:
-                        print("You are now the responsible person")
-                        self.set_responsible_person(user)
+    def kick_person(self, id: str, user: Person, electQueue: queue.Queue, phase_queue: queue.Queue):
+        print(f"kicking person {id}")
+        for person in self.Persons:
+            if person.id == id:
+                self.Persons.remove(person)
+                if person.isScrumMaster and len(self.Persons) > 1:
+                    elect_instruction: Instruction = Instruction("elect", f"highest_id:{0}", user.id) # ToDo: Achtung! Hierdurch denkt jeder er sei der neue Leader
+                    electQueue.put(elect_instruction)
+                elif person.isScrumMaster and len(self.Persons) == 1:
+                    print("You are now the responsible person")
+                    self.set_responsible_person(user.id)
+                    user.set_scrum_master(True)
+                    redo_instruction: Instruction = Instruction("redo", "", user.id)
+                    phase_queue.put(redo_instruction)
+                    print("sent redo instruction to phase queue")
 
     def add_ticket(self, ticket):
         with self.lock:
@@ -63,10 +66,12 @@ class RoomState:
         with self.lock:
             return self.Responsible
 
-    def set_responsible_person(self, id: str):
+    def set_responsible_person(self, id: string):
         with self.lock:
             new_responsible_person: Person
             for person in self.Persons:
+                print(f"checking if {person.id} matches {id}")
                 if person.id == id:
+                    print("found my new responsible person")
                     new_responsible_person = person
             self.Responsible = new_responsible_person
