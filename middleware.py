@@ -62,7 +62,10 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 id_to_kick: str = receivedInstruction.body
                 roomState.kick_person(id_to_kick, user, electionQueue, phase_queue)
             case "redo":
-                phase_queue.put(receivedInstruction)
+                if roomState.Phase == "phase1":
+                    phase_queue.put(receivedInstruction)
+                elif roomState.Phase == "phase2":
+                    messageQueue.put(receivedInstruction)
             case _:
                 print(f"Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
 

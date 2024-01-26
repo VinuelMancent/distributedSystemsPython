@@ -110,22 +110,28 @@ if __name__ == "__main__":
     # this only works for normal user, not for responsible
     index = 0
     print(f"We are going to guess {len(roomState.Tickets)} tickets")
-    for ticket in roomState.Tickets: # idee: Anstatt dieser for each schleife eine for schleife mit index machen, bei redo command wird der gleiche index genommen
+    for index in range(len(roomState.Tickets)):
         if not user.isScrumMaster:
             while True:
-                print("Waiting for responsible person to go to the next ticket")
+                print("Waiting for responsible person to go to the next ticket") # wird wieder mehrfach ausgegeben je nach user index
                 received_message: Instruction = broadcast_queue.get()
                 # only check for instruction phase 2
                 if received_message.action == "next_ticket":
+                    ticket = roomState.Tickets[index]
+                    index += 1
                     print(f"We are now guessing the ticket '{ticket.content}'")
                     while True:
                         try:
-                            question = int(input("What is your guess?"))
+                            guess = int(input("What is your guess?"))
                             break
                         except:
                             print("That's not a valid option!")
                     break
+                elif received_message.action == "redo":
+                    print("redoing a ticket")
+                    break
         else:
+            ticket = roomState.Tickets[index]
             next_ticket_instruction: Instruction = Instruction("next_ticket", "", user.id)
             message = json.dumps(next_ticket_instruction, default=vars)
             send_broadcast_message(message, broadcastPort)

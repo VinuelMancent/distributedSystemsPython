@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="new leader now can add tickets when in phase 1">
+    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="new leader now can add tickets when in phase 1, but when first one drops out everyone gets kicked">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lcr.py" beforeDir="false" afterPath="$PROJECT_DIR$/lcr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/middleware.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/roomState.py" beforeDir="false" afterPath="$PROJECT_DIR$/roomState.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -157,7 +160,7 @@
       <workItem from="1705939389170" duration="4242000" />
       <workItem from="1706200591147" duration="4413000" />
       <workItem from="1706261479878" duration="1371000" />
-      <workItem from="1706280969500" duration="5495000" />
+      <workItem from="1706280969500" duration="6973000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -319,7 +322,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706285550052</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="new leader now can add tickets when in phase 1, but when first one drops out everyone gets kicked">
+      <option name="closed" value="true" />
+      <created>1706286592727</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1706286592727</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -356,7 +367,8 @@
     <MESSAGE value="uff3" />
     <MESSAGE value="lcr finally works" />
     <MESSAGE value="new leader now can add tickets when in phase 1" />
-    <option name="LAST_COMMIT_MESSAGE" value="new leader now can add tickets when in phase 1" />
+    <MESSAGE value="new leader now can add tickets when in phase 1, but when first one drops out everyone gets kicked" />
+    <option name="LAST_COMMIT_MESSAGE" value="new leader now can add tickets when in phase 1, but when first one drops out everyone gets kicked" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScrumPoker$instruction.coverage" NAME="instruction Coverage Results" MODIFIED="1703545325415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

@@ -14,7 +14,6 @@ def elect(user: Person, electQueue: queue.Queue, phase_queue: queue.Queue, roomS
         electMessage: Instruction = electQueue.get()
         if next_person is None:
             next_person = get_next_user(roomState, user)
-        print(f"the next person is {next_person.id} with port {next_person.port}")
         if electMessage.body.startswith("elected"):
             roomState.set_responsible_person(electMessage.body.split(":")[1])
             for person in roomState.Persons:

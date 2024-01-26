@@ -70,8 +70,6 @@ class RoomState:
         with self.lock:
             new_responsible_person: Person
             for person in self.Persons:
-                print(f"checking if {person.id} matches {id}")
                 if person.id == id:
-                    print("found my new responsible person")
                     new_responsible_person = person
             self.Responsible = new_responsible_person
