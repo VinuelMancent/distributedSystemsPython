@@ -65,14 +65,13 @@ if __name__ == "__main__":
 
     # BIS HIER HER WIRD DER RAUM ERSTELLT; ENTWEDER SELBST ODER ER WIRD EMPFANGEN
     while True:
-        print("outer while true")
+        leave_outer_loop = False
         if user.isScrumMaster:
             response = ""
             if len(roomState.Tickets) == 0:
                 response = "Y"
             else:
-                response = input(
-                    "Do you want to create a Ticket?(Y/N)")
+                response = input("Do you want to create a Ticket?(Y/N)")
             if response.upper() == "Y":
                 ticketContent = input("What is the task of the ticket?")
                 ticket: Ticket = Ticket(ticketContent)
@@ -89,18 +88,22 @@ if __name__ == "__main__":
         else:
             print("Waiting for responsible person to go into phase 2")
             while True:
-                print("inner else while true")
                 received_message: Instruction = phase_queue.get()
                 # only check for instruction phase 2
                 if (received_message.action == "phase") and (received_message.body == "2"):
                     roomState.change_phase("2")
                     print("Responsible person gave instruction to go into phase 2")
+                    leave_outer_loop = True
                     break
                 elif received_message.action == "redo":
                     break
                 else:
                     print("received something else")
                     continue
+            else:
+                continue
+            if leave_outer_loop:
+                break
 
     print("We are now in phase 2")
 
