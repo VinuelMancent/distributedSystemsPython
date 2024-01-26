@@ -29,11 +29,11 @@ if __name__ == "__main__":
     udp_listener_thread = threading.Thread(target=udp_broadcast_listener,
                                            args=(broadcast_queue, heartbeat_queue, room_queue, election_queue, stop_queue, roomState, user)).start()
 
-    tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue, user, 5)).start()
+    tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue, user, election_queue, 5)).start()
 
     heartbeat_sender_thread = threading.Thread(target=send_heartbeat, args=(broadcastPort, user)).start()
 
-    heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(heartbeat_queue, user, roomState)).start()
+    heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(heartbeat_queue, user, roomState, election_queue)).start()
 
     election_thread = threading.Thread(target=elect, args=(user, election_queue, roomState)).start()
 
@@ -58,7 +58,6 @@ if __name__ == "__main__":
                 roomState.Responsible = received_room_state.get_responsible_person()
                 break
     except queue.Empty:
-        print("No message received within the timeout")
         user.set_scrum_master(True)
         roomState.add_person(user)
         print("You created a new Room and are the responsible Person")

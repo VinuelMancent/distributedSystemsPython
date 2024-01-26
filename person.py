@@ -63,7 +63,6 @@ class Person:
     def set_port(self, port: int, send: bool):
         with self.lock:
             if port != 0:
-                print(f"changing port for {self.id} to {port}")
                 if send and port != self.port:
                     new_port_instruction: Instruction = Instruction("port", {"port": port}, self.id)
                     middleware.send_broadcast_message(json.dumps(new_port_instruction, default=vars), 61424)

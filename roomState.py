@@ -1,5 +1,6 @@
 import json
 import logging
+import queue
 
 import middleware
 from person import Person
@@ -36,7 +37,7 @@ class RoomState:
         with self.lock:
             self.Persons.append(person)
 
-    def kick_person(self, id: str, user: Person):
+    def kick_person(self, id: str, user: Person, electQueue: queue.Queue):
         with self.lock:
             logging.debug(f"kicking person {id}")
             for person in self.Persons:
@@ -44,8 +45,8 @@ class RoomState:
                     logging.debug(f"kicking {person}")
                     self.Persons.remove(person)
                     if person.isScrumMaster and len(self.Persons) > 1:
-                        elect_instruction: Instruction = Instruction("election", f"highest_id:{user.id}", user.id)
-                        middleware.send_broadcast_message(json.dumps(elect_instruction, default=vars), 61424)
+                        elect_instruction: Instruction = Instruction("elect", f"highest_id:{0}", user.id) # ToDo: Achtung! Hierdurch denkt jeder er sei der neue Leader
+                        electQueue.put(elect_instruction)
                     elif person.isScrumMaster and len(self.Persons) == 1:
                         print("You are now the responsible person")
                         self.set_responsible_person(user)

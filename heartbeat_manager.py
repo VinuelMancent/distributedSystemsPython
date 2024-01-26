@@ -12,7 +12,7 @@ TIME_TIL_HEARTBEAT_EXPECTED = 5
 MISSED_HEARTBEATS_UNTIL_DISCONNECT = 5
 
 
-def manage_heartbeats(heartbeat_queue: queue.Queue, person: Person, roomState: RoomState):
+def manage_heartbeats(heartbeat_queue: queue.Queue, person: Person, roomState: RoomState, electQueue: queue.Queue):
     while True:
         received_heartbeats: set[str] = set()
         amount_of_heartbeats = heartbeat_queue.qsize()
@@ -33,7 +33,7 @@ def manage_heartbeats(heartbeat_queue: queue.Queue, person: Person, roomState: R
         for id in ids_to_remove:
             kick_instruction: Instruction = Instruction("kick", id, person.id)
             middleware.send_broadcast_message(json.dumps(kick_instruction, default=vars), 61424)
-            roomState.kick_person(id, person)
+            roomState.kick_person(id, person, electQueue)
             person.remove_person_from_heartbeat_dict(id)
             print(f"Kicked {id} because of missed heartbeats")
         time.sleep(TIME_TIL_HEARTBEAT_EXPECTED)
