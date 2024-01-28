@@ -53,7 +53,7 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
             case "next_ticket":
                 messageQueue.put(receivedInstruction)
             case "elect":
-                print(f"received broadcast election {receivedInstruction.body} from {receivedInstruction.sender}")
+                print(f"{receivedInstruction.body} is the new leader!")
                 if receivedInstruction.body.startswith("elected"):
                     electionQueue.put(receivedInstruction)
             case "port":
