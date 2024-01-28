@@ -78,11 +78,11 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 print(f"Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
 
 
-def send_heartbeat(port, person):
+def send_heartbeat(port, person, stop_queue: queue.Queue):
     TIME_BETWEEN_HEARTBEATS = 5
     instruction = Instruction("heartbeat", person.id, person.id)
     message = json.dumps(instruction, default=vars)
-    while True:
+    while stop_queue.qsize() == 0:
         send_broadcast_message(message, port)
         time.sleep(TIME_BETWEEN_HEARTBEATS)
 

@@ -12,8 +12,8 @@ TIME_TIL_HEARTBEAT_EXPECTED = 5
 MISSED_HEARTBEATS_UNTIL_DISCONNECT = 5
 
 
-def manage_heartbeats(heartbeat_queue: queue.Queue, person: Person, roomState: RoomState, electQueue: queue.Queue, phase_queue: queue.Queue):
-    while True:
+def manage_heartbeats(heartbeat_queue: queue.Queue, person: Person, roomState: RoomState, electQueue: queue.Queue, phase_queue: queue.Queue, stop_queue: queue.Queue):
+    while stop_queue.qsize() == 0:
         received_heartbeats: set[str] = set()
         amount_of_heartbeats = heartbeat_queue.qsize()
         for heartbeat in range(amount_of_heartbeats):

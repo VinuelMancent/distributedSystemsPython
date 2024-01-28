@@ -8,8 +8,8 @@ from roomState import RoomState
 from time import sleep
 
 
-def elect(user: Person, electQueue: queue.Queue, phase_queue: queue.Queue, broadcast_queue: queue.Queue, roomState: RoomState):
-    while True:
+def elect(user: Person, electQueue: queue.Queue, phase_queue: queue.Queue, broadcast_queue: queue.Queue, roomState: RoomState, stop_queue: queue.Queue):
+    while stop_queue.qsize() == 0:
         next_person: Person = None
         sleep(0.5)
         with electQueue.mutex:
