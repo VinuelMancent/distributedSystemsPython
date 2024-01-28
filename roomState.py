@@ -54,7 +54,6 @@ class RoomState:
                     user.set_scrum_master(True)
                     redo_instruction: Instruction = Instruction("redo", "", user.id)
                     phase_queue.put(redo_instruction)
-                    print("sent redo instruction to phase queue")
 
     def add_ticket(self, ticket):
         with self.lock:
