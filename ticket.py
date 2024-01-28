@@ -8,7 +8,7 @@ class Ticket:
     average: float
     lock: threading.Lock
 
-    def __init__(self, content: str, guesses={}, average=0):
+    def __init__(self, content: str, guesses=dict(), average=0):
         self.content = content
         self.guesses = guesses
         self.average = average

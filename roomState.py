@@ -22,7 +22,7 @@ class RoomState:
     def to_dict(self):
         return {
             "Persons": [person.to_dict() for person in self.Persons],
-            "Tickets": [ticket.__dict__ for ticket in self.Tickets],
+            "Tickets": [ticket.to_dict() for ticket in self.Tickets],
             "Phase": self.Phase,
             "Responsible": self.Responsible.to_dict(),
             "CurrentTicketIndex": self.CurrentTicketIndex

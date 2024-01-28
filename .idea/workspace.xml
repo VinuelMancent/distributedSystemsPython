@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="added stop_queue to every thread so that it stops after a successful run">
+    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="final results output correctly prints the averages to each ticket">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/middleware.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/roomState.py" beforeDir="false" afterPath="$PROJECT_DIR$/roomState.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ticket.py" beforeDir="false" afterPath="$PROJECT_DIR$/ticket.py" afterDir="false" />
     </list>
@@ -166,7 +164,8 @@
       <workItem from="1706305084008" duration="2367000" />
       <workItem from="1706309547352" duration="804000" />
       <workItem from="1706440441059" duration="1095000" />
-      <workItem from="1706442185140" duration="5140000" />
+      <workItem from="1706442185140" duration="5215000" />
+      <workItem from="1706456526033" duration="1245000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -408,7 +407,23 @@
       <option name="project" value="LOCAL" />
       <updated>1706446433966</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="trying to fix final output">
+      <option name="closed" value="true" />
+      <created>1706447426135</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1706447426135</updated>
+    </task>
+    <task id="LOCAL-00032" summary="final results output correctly prints the averages to each ticket">
+      <option name="closed" value="true" />
+      <created>1706457612151</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1706457612151</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -426,8 +441,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added timeout for upd listener making the stopping of the thread possible" />
-    <MESSAGE value="added a timeout for tcp listener as well, programm now stops at the end" />
     <MESSAGE value="trying to start heartbeats" />
     <MESSAGE value="trying to finish the heartbeat_manager" />
     <MESSAGE value="heartbeats now get stored correctly, kicking still needs some work" />
@@ -451,7 +464,9 @@
     <MESSAGE value="works" />
     <MESSAGE value="works, now only bugfixes left" />
     <MESSAGE value="added stop_queue to every thread so that it stops after a successful run" />
-    <option name="LAST_COMMIT_MESSAGE" value="added stop_queue to every thread so that it stops after a successful run" />
+    <MESSAGE value="trying to fix final output" />
+    <MESSAGE value="final results output correctly prints the averages to each ticket" />
+    <option name="LAST_COMMIT_MESSAGE" value="final results output correctly prints the averages to each ticket" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScrumPoker$instruction.coverage" NAME="instruction Coverage Results" MODIFIED="1703545325415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
