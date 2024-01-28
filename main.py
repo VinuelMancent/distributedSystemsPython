@@ -127,14 +127,17 @@ if __name__ == "__main__":
                     while True:
                         try:
                             guess = int(input("What is your guess?"))
+                            guessInstruction: Instruction = Instruction("guess", str(index) + ":" + str(guess), user.id)
+                            middleware.send_broadcast_message(json.dumps(guessInstruction, default=vars), 61424)
                             break
-                        except:
+                        except Exception as ex:
+                            print(ex)
                             print("That's not a valid option!")
                     try:
                         received_message: Instruction = broadcast_queue.get_nowait()
                         if received_message.action == "redo":
                             index = index - 1
-                            print("redoing a ticket")
+                            print("We are reguessing this ticket because of the change of the leader")
                     finally:
                         break
                     break

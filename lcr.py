@@ -10,7 +10,6 @@ from time import sleep
 
 def elect(user: Person, electQueue: queue.Queue, phase_queue: queue.Queue, broadcast_queue: queue.Queue, roomState: RoomState):
     while True:
-        highest_id: str = user.id
         next_person: Person = None
         sleep(0.5)
         with electQueue.mutex:
@@ -24,14 +23,16 @@ def elect(user: Person, electQueue: queue.Queue, phase_queue: queue.Queue, broad
                 for person in roomState.Persons:
                     if person.id == electMessage.body.split(":")[1]:
                         person.set_scrum_master(True)
-                print(f"person {electMessage.sender} got elected as the new leader")
-                break
             elif electMessage.body.startswith("highest_id"):
                 received_id = electMessage.body.split(":")[1]
-                if received_id < highest_id:
-                    highest_id = highest_id
-                elif received_id > highest_id:
-                    highest_id = received_id
+                if received_id < user.id:
+                    new_elect_message: Instruction = Instruction("elect", f"highest_id:{user.id}", user.id)
+                    middleware.tcp_unicast_sender("localhost", next_person.port,
+                                                  json.dumps(new_elect_message, default=vars))
+                elif received_id > user.id:
+                    new_elect_message: Instruction = Instruction("elect", f"highest_id:{received_id}", user.id)
+                    middleware.tcp_unicast_sender("localhost", next_person.port,
+                                                  json.dumps(new_elect_message, default=vars))
                 elif received_id == user.id:
                     user.set_scrum_master(True)
                     elected_instruction: Instruction = Instruction("elect", f"elected:{user.id}", user.id)
@@ -42,8 +43,6 @@ def elect(user: Person, electQueue: queue.Queue, phase_queue: queue.Queue, broad
                     middleware.send_broadcast_message(json.dumps(redo_instruction, default=vars), 61424)
                     phase_queue.put(redo_instruction)
                     break
-                new_elect_message: Instruction = Instruction("elect", f"highest_id:{highest_id}", user.id)
-                middleware.tcp_unicast_sender("localhost", next_person.port, json.dumps(new_elect_message, default=vars))
 
 
 def get_next_user(roomState: RoomState, user: Person) -> Person:

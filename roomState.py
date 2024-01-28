@@ -11,9 +11,9 @@ import threading
 
 
 class RoomState:
-    def __init__(self, responsible_person: Person, persons=None, tickets=None, phase="1"):
-        self.Persons = persons or []
-        self.Tickets = tickets or []
+    def __init__(self, responsible_person: Person, persons: list[Person]=[], tickets:list[Ticket]=[], phase="1"):
+        self.Persons = persons
+        self.Tickets = tickets
         self.Phase = phase
         self.Responsible = responsible_person
         self.CurrentTicketIndex = 0
@@ -75,3 +75,7 @@ class RoomState:
                 if person.id == id:
                     new_responsible_person = person
             self.Responsible = new_responsible_person
+
+    def guess_ticket(self, index: int, user: str, guess: int):
+        with self.lock:
+            self.Tickets[index].guess(user, guess)

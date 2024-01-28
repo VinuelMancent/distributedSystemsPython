@@ -45,7 +45,10 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
             case "ticket":
                 roomState.add_ticket(Ticket.from_json(receivedInstruction.body))
             case "guess":
-                print(receivedInstruction)
+                print("received guess instruction")
+                ticket_index: int = int(receivedInstruction.body.split(":")[0])
+                ticket_guess: int = int(receivedInstruction.body.split(":")[1])
+                roomState.guess_ticket(ticket_index, receivedInstruction.sender, ticket_guess)
             case "next_ticket":
                 messageQueue.put(receivedInstruction)
             case "elect":
