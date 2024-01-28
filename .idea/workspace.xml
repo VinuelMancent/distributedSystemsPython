@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="mostly works?">
+    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="fixex lcr">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lcr.py" beforeDir="false" afterPath="$PROJECT_DIR$/lcr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/middleware.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/roomState.py" beforeDir="false" afterPath="$PROJECT_DIR$/roomState.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ticket.py" beforeDir="false" afterPath="$PROJECT_DIR$/ticket.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -167,7 +164,7 @@
       <workItem from="1706305084008" duration="2367000" />
       <workItem from="1706309547352" duration="804000" />
       <workItem from="1706440441059" duration="1095000" />
-      <workItem from="1706442185140" duration="925000" />
+      <workItem from="1706442185140" duration="2085000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -377,7 +374,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706440586353</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="fixex lcr">
+      <option name="closed" value="true" />
+      <created>1706443140039</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1706443140039</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -419,7 +424,8 @@
     <MESSAGE value="phase 2 for not new leaders works, new leader is still ahead" />
     <MESSAGE value="phase 2 works" />
     <MESSAGE value="mostly works?" />
-    <option name="LAST_COMMIT_MESSAGE" value="mostly works?" />
+    <MESSAGE value="fixex lcr" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixex lcr" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScrumPoker$instruction.coverage" NAME="instruction Coverage Results" MODIFIED="1703545325415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

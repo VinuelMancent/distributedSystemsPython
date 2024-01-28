@@ -122,7 +122,6 @@ if __name__ == "__main__":
                 # only check for instruction phase 2
                 if received_message.action == "next_ticket":
                     ticket = roomState.Tickets[index]
-                    index += 1
                     print(f"We are now guessing the ticket '{ticket.content}'")
                     while True:
                         try:
@@ -139,6 +138,7 @@ if __name__ == "__main__":
                             index = index - 1
                             print("We are reguessing this ticket because of the change of the leader")
                     finally:
+                        index += 1
                         break
                     break
 
