@@ -79,3 +79,7 @@ class RoomState:
     def guess_ticket(self, index: int, user: str, guess: int):
         with self.lock:
             self.Tickets[index].guess(user, guess)
+
+    def print_final_tickets(self):
+        for ticket in self.Tickets:
+            print(ticket)

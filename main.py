@@ -147,13 +147,23 @@ if __name__ == "__main__":
             next_ticket_instruction: Instruction = Instruction("next_ticket", "", user.id)
             message = json.dumps(next_ticket_instruction, default=vars)
             send_broadcast_message(message, broadcastPort)
-            index += 1
-            print(f"increased index to {index} as leader")
             print(f"Your team is currently guessing the ticket '{ticket.content}'")
-            if index < len(roomState.Tickets):
+            if index < len(roomState.Tickets)-1:
                 input("press Enter when you want to go to the next Ticket")
+                guesses_dict = roomState.Tickets[index].guesses
+                sum_of_guesses: int = 0
+                for guess in guesses_dict.values():
+                    sum_of_guesses += guess
+                average = sum_of_guesses/len(guesses_dict)
+                print(f"the final guess of the ticket {ticket.content} is: {average}")
+                roomState.Tickets[index].average = average
+                averageInstruction: Instruction = Instruction("average", str(index) + ":" + str(average), user.id)
+                middleware.send_broadcast_message(json.dumps(averageInstruction, default=vars), 61424)
             else:
                 input("press Enter to finish")
+                print("---------------FINAL RESULTS---------------")
+                roomState.print_final_tickets()
+            index += 1
 
     print("We are done guessing the tickets, goodbye!")
     threadsRunning = False

@@ -45,10 +45,11 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
             case "ticket":
                 roomState.add_ticket(Ticket.from_json(receivedInstruction.body))
             case "guess":
-                print("received guess instruction")
                 ticket_index: int = int(receivedInstruction.body.split(":")[0])
                 ticket_guess: int = int(receivedInstruction.body.split(":")[1])
-                roomState.guess_ticket(ticket_index, receivedInstruction.sender, ticket_guess)
+                if user.isScrumMaster:
+                    print(f"\n received guess: {ticket_guess} \n")
+                    roomState.guess_ticket(ticket_index, receivedInstruction.sender, ticket_guess)
             case "next_ticket":
                 messageQueue.put(receivedInstruction)
             case "elect":
@@ -69,6 +70,10 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                     phase_queue.put(receivedInstruction)
                 elif roomState.Phase == "2":
                     messageQueue.put(receivedInstruction)
+            case "average":
+                ticket_index: int = int(receivedInstruction.body.split(":")[0])
+                ticket_average: float = float(receivedInstruction.body.split(":")[1])
+                roomState.Tickets[ticket_index].average = ticket_average
             case _:
                 print(f"Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
 
