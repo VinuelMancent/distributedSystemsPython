@@ -148,27 +148,25 @@ if __name__ == "__main__":
             message = json.dumps(next_ticket_instruction, default=vars)
             send_broadcast_message(message, broadcastPort)
             print(f"Your team is currently guessing the ticket '{ticket.content}'")
-            if index < len(roomState.Tickets)-1:
-                next_step_text = ""
-                if index < len(roomState.Tickets) - 2: # if there is a ticket after the current one
-                    next_step_text = "press Enter when you want to go to the next Ticket"
-                else: # is this is the last ticket
+            if index <= len(roomState.Tickets)-1:
+                next_step_text = "press Enter when you want to go to the next Ticket"
+                if index == len(roomState.Tickets) - 1: # if there is a ticket after the current one
                     next_step_text = "press Enter to finish"
-
                 input(next_step_text)
                 guesses_dict = roomState.Tickets[index].guesses
                 sum_of_guesses: int = 0
                 for guess in guesses_dict.values():
                     sum_of_guesses += guess
-                average = sum_of_guesses/len(guesses_dict)
+                average = 0
+                if len(guesses_dict) > 0:
+                    average = sum_of_guesses/len(guesses_dict)
                 print(f"the final guess of the ticket {ticket.content} is: {average}")
                 roomState.set_ticket_average(index, average)
                 averageInstruction: Instruction = Instruction("average", str(index) + ":" + str(average), user.id)
                 middleware.send_broadcast_message(json.dumps(averageInstruction, default=vars), 61424)
-            else:
-                input("press Enter to finish")
-                print("---------------FINAL RESULTS---------------")
-                roomState.print_final_tickets()
+                if index == len(roomState.Tickets) - 1:
+                    print("---------------FINAL RESULTS---------------")
+                    roomState.print_final_tickets()
             index += 1
 
     print("We are done guessing the tickets, goodbye!")
