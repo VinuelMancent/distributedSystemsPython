@@ -58,6 +58,7 @@ if __name__ == "__main__":
                 #roomState.Responsible = received_room_state.get_responsible_person()
                 roomState.set_responsible_person(received_room_state.get_responsible_person().id)
                 roomState.Phase = received_room_state.Phase
+                roomState.CurrentTicketIndex = received_room_state.CurrentTicketIndex
                 break
 
     except queue.Empty:
@@ -111,9 +112,8 @@ if __name__ == "__main__":
     print("We are now in phase 2")
 
     print(f"We are going to guess {len(roomState.Tickets)} tickets")
-    index: int = 0
+    index: int = roomState.CurrentTicketIndex
     while index < len(roomState.Tickets):
-        print(f"index at beginning is {index}")
         if not user.isScrumMaster:
             while True:
                 if index != 0:
@@ -121,10 +121,8 @@ if __name__ == "__main__":
                 received_message: Instruction = broadcast_queue.get()
                 # only check for instruction phase 2
                 if received_message.action == "next_ticket":
-                    print(f"getting ticket with index {index}: {roomState.Tickets[index]}")
                     ticket = roomState.Tickets[index]
                     index += 1
-                    print(f"increased index to {index}")
                     print(f"We are now guessing the ticket '{ticket.content}'")
                     while True:
                         try:
@@ -136,7 +134,6 @@ if __name__ == "__main__":
                         received_message: Instruction = broadcast_queue.get_nowait()
                         if received_message.action == "redo":
                             index = index - 1
-                            print(f"decreased index to {index}")
                             print("redoing a ticket")
                     finally:
                         break

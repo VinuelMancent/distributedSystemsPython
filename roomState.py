@@ -16,6 +16,7 @@ class RoomState:
         self.Tickets = tickets or []
         self.Phase = phase
         self.Responsible = responsible_person
+        self.CurrentTicketIndex = 0
         self.lock = threading.Lock()
 
     def to_dict(self):
@@ -23,7 +24,8 @@ class RoomState:
             "Persons": [person.to_dict() for person in self.Persons],
             "Tickets": [ticket.__dict__ for ticket in self.Tickets],
             "Phase": self.Phase,
-            "Responsible": self.Responsible.to_dict()
+            "Responsible": self.Responsible.to_dict(),
+            "CurrentTicketIndex": self.CurrentTicketIndex
         }
 
     @classmethod
