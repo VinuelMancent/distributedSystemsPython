@@ -76,6 +76,7 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 roomState.Tickets[ticket_index].average = ticket_average
             case _:
                 print(f"Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
+    udp_socket.close()
 
 
 def send_heartbeat(port, person, stop_queue: queue.Queue):
@@ -95,13 +96,13 @@ def send_broadcast_message(message, port):
 
 
 def tcp_unicast_listener(stopQueue: queue.Queue, person: Person, electionQueue: queue.Queue, seconds_until_problem: int = 5):
-    while True:
+    while stopQueue.qsize() == 0:
         tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         tcp_socket.bind(('0.0.0.0', person.port))
         port = tcp_socket.getsockname()[1]
         person.set_port(port, True)
         tcp_socket.listen(1)
-        while stopQueue.qsize() == 0:
+        while True:
             try:
                 # Akzeptiere eine eingehende Verbindung
                 client_socket, address = tcp_socket.accept()

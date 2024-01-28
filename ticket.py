@@ -37,3 +37,8 @@ class Ticket:
     def guess(self, user: str, guess: int):
         with self.lock:
             self.guesses[user] = guess
+
+    def set_average(self, average: float):
+        with self.lock:
+            print(f"setting average for {self.content}: {average}")
+            self.average = average
