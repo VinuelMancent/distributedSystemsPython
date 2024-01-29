@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="final results output correctly prints the averages to each ticket">
+    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="removed a debug output">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/roomState.py" beforeDir="false" afterPath="$PROJECT_DIR$/roomState.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ticket.py" beforeDir="false" afterPath="$PROJECT_DIR$/ticket.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,7 +164,12 @@
       <workItem from="1706309547352" duration="804000" />
       <workItem from="1706440441059" duration="1095000" />
       <workItem from="1706442185140" duration="5215000" />
-      <workItem from="1706456526033" duration="1245000" />
+      <workItem from="1706456526033" duration="2198000" />
+      <workItem from="1706470089847" duration="819000" />
+      <workItem from="1706473772323" duration="2951000" />
+      <workItem from="1706529908411" duration="177000" />
+      <workItem from="1706540002313" duration="7108000" />
+      <workItem from="1706553565326" duration="551000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -423,7 +427,31 @@
       <option name="project" value="LOCAL" />
       <updated>1706457612151</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="fixed serializing roomState by calling the correct ticket to dict method">
+      <option name="closed" value="true" />
+      <created>1706457942182</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1706457942182</updated>
+    </task>
+    <task id="LOCAL-00034" summary="fixed an output">
+      <option name="closed" value="true" />
+      <created>1706458122335</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1706458122335</updated>
+    </task>
+    <task id="LOCAL-00035" summary="removed a debug output">
+      <option name="closed" value="true" />
+      <created>1706458191204</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1706458191204</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -441,9 +469,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="trying to start heartbeats" />
-    <MESSAGE value="trying to finish the heartbeat_manager" />
-    <MESSAGE value="heartbeats now get stored correctly, kicking still needs some work" />
     <MESSAGE value="kicking now works" />
     <MESSAGE value="creating and adding tickets now works" />
     <MESSAGE value="from admin view everything works now" />
@@ -466,7 +491,10 @@
     <MESSAGE value="added stop_queue to every thread so that it stops after a successful run" />
     <MESSAGE value="trying to fix final output" />
     <MESSAGE value="final results output correctly prints the averages to each ticket" />
-    <option name="LAST_COMMIT_MESSAGE" value="final results output correctly prints the averages to each ticket" />
+    <MESSAGE value="fixed serializing roomState by calling the correct ticket to dict method" />
+    <MESSAGE value="fixed an output" />
+    <MESSAGE value="removed a debug output" />
+    <option name="LAST_COMMIT_MESSAGE" value="removed a debug output" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScrumPoker$instruction.coverage" NAME="instruction Coverage Results" MODIFIED="1703545325415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

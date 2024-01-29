@@ -12,6 +12,28 @@ from heartbeat_manager import manage_heartbeats
 import threading
 import queue
 from lcr import elect
+from inputimeout import inputimeout
+
+
+def get_user_input(guess: int, stop: dict[str, bool], broadcast_queue: queue.Queue):
+    counter: int = 0
+    while not stop["stop"]:
+        if counter == 0:
+            inputmessage = "What is your guess?"
+        else:
+            inputmessage = ""
+        counter += 1
+        try:
+            user_guess = int(inputimeout(prompt=inputmessage, timeout=5))
+            guess += user_guess
+            guessInstruction: Instruction = Instruction("guess", str(index) + ":" + str(guess), user.id)
+            middleware.send_broadcast_message(json.dumps(guessInstruction, default=vars), 61424)
+            broadcast_queue.put(guessInstruction)
+            break
+        except Exception as ex:
+            if type(ex).__name__ == "ValueError":
+                print("That's not a valid option!")
+
 
 TIME_TIL_RESPONSE_IN_SECONDS = 0.5
 
@@ -27,15 +49,24 @@ if __name__ == "__main__":
     phase_queue = queue.Queue()
 
     udp_listener_thread = threading.Thread(target=udp_broadcast_listener,
-                                           args=(broadcast_queue, heartbeat_queue, room_queue, election_queue, phase_queue, stop_queue, roomState, user)).start()
+                                           args=(
+                                           broadcast_queue, heartbeat_queue, room_queue, election_queue, phase_queue,
+                                           stop_queue, roomState, user))
+    udp_listener_thread.start()
 
-    tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue, user, election_queue, 5)).start()
+    tcp_listener_thread = threading.Thread(target=tcp_unicast_listener, args=(stop_queue, user, election_queue, 5))
+    tcp_listener_thread.start()
 
-    heartbeat_sender_thread = threading.Thread(target=send_heartbeat, args=(broadcastPort, user, stop_queue)).start()
+    heartbeat_sender_thread = threading.Thread(target=send_heartbeat, args=(broadcastPort, user, stop_queue))
+    heartbeat_sender_thread.start()
 
-    heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(heartbeat_queue, user, roomState, election_queue, phase_queue, stop_queue)).start()
+    heartbeat_manager_thread = threading.Thread(target=manage_heartbeats, args=(
+    heartbeat_queue, user, roomState, election_queue, phase_queue, stop_queue))
+    heartbeat_manager_thread.start()
 
-    election_thread = threading.Thread(target=elect, args=(user, election_queue, phase_queue, broadcast_queue, roomState, stop_queue)).start()
+    election_thread = threading.Thread(target=elect,
+                                       args=(user, election_queue, phase_queue, broadcast_queue, roomState, stop_queue))
+    election_thread.start()
 
     # send join request
     joinInstruction = Instruction("join", json.dumps(user.to_dict(), indent=2), user.id)
@@ -55,7 +86,7 @@ if __name__ == "__main__":
                     roomState.add_ticket(ticket)
                 for person in received_room_state.Persons:
                     roomState.add_person(person)
-                #roomState.Responsible = received_room_state.get_responsible_person()
+                # roomState.Responsible = received_room_state.get_responsible_person()
                 roomState.set_responsible_person(received_room_state.get_responsible_person().id)
                 roomState.Phase = received_room_state.Phase
                 roomState.CurrentTicketIndex = received_room_state.CurrentTicketIndex
@@ -80,7 +111,8 @@ if __name__ == "__main__":
                     ticketContent = input("What is the task of the ticket?")
                     ticket: Ticket = Ticket(ticketContent)
                     roomState.Tickets.append(ticket)
-                    ticketInstruction: Instruction = Instruction("ticket", json.dumps(ticket.to_dict(), indent=2), user.id)
+                    ticketInstruction: Instruction = Instruction("ticket", json.dumps(ticket.to_dict(), indent=2),
+                                                                 user.id)
                     message = json.dumps(ticketInstruction, default=vars)
                     middleware.send_broadcast_message(message, broadcastPort)
                 else:
@@ -113,32 +145,55 @@ if __name__ == "__main__":
 
     print(f"We are going to guess {len(roomState.Tickets)} tickets")
     index: int = roomState.CurrentTicketIndex
+
     while index < len(roomState.Tickets):
         if not user.isScrumMaster:
             while True:
+                last_loop_necessary = True
                 if index != 0:
-                    print("Waiting for responsible person to go to the next ticket") # wird wieder mehrfach ausgegeben je nach user index
+                    print(
+                        "Waiting for responsible person to go to the next ticket")  # wird wieder mehrfach ausgegeben je nach user index
                 received_message: Instruction = broadcast_queue.get()
+                print(f"received instruction is {received_message.action}")
                 # only check for instruction phase 2
                 if received_message.action == "next_ticket":
                     ticket = roomState.Tickets[index]
                     print(f"We are now guessing the ticket '{ticket.content}'")
-                    while True:
+                    # Here i try to do the user input handling in another thread in order to skip one question when another signal comes in
+                    userinput: int = 0
+                    stop_user_input_thread: dict[str, bool] = {"stop": False}
+                    user_input_thread = threading.Thread(target=get_user_input,
+                                                         args=(userinput, stop_user_input_thread, broadcast_queue))
+                    user_input_thread.start()
+                    while user_input_thread.is_alive():  # check if this condition works
                         try:
-                            guess = int(input("What is your guess?"))
-                            guessInstruction: Instruction = Instruction("guess", str(index) + ":" + str(guess), user.id)
-                            middleware.send_broadcast_message(json.dumps(guessInstruction, default=vars), 61424)
+                            received_message: Instruction = broadcast_queue.get(timeout=1.0)
+                            if received_message.action == "next_ticket":
+                                stop_user_input_thread["stop"] = True
+                                user_input_thread.join(5.0)
+                                last_loop_necessary = False
+                                index += 1
+                                broadcast_queue.put(received_message)
+                                break
+                            elif received_message.action == "guess" and received_message.sender == user.id:
+                                stop_user_input_thread["stop"] = True
+                                user_input_thread.join(5.0)
+                            else:
+                                continue
+                        finally:
+                            continue
+                    while last_loop_necessary:
+                        try:
+                            received_message: Instruction = broadcast_queue.get()
+                            if received_message.action == "redo":
+                                index = index - 1
+                                print("We are reguessing this ticket because of the change of the leader")
+                            else:
+                                print(f"received message {received_message.action}, putting it back there")
+                                broadcast_queue.put(received_message)
+                        finally:
+                            index += 1
                             break
-                        except Exception as ex:
-                            print(ex)
-                            print("That's not a valid option!")
-                    try:
-                        received_message: Instruction = broadcast_queue.get_nowait()
-                        if received_message.action == "redo":
-                            index = index - 1
-                            print("We are reguessing this ticket because of the change of the leader")
-                    finally:
-                        index += 1
                         break
                     break
 
@@ -148,9 +203,9 @@ if __name__ == "__main__":
             message = json.dumps(next_ticket_instruction, default=vars)
             send_broadcast_message(message, broadcastPort)
             print(f"Your team is currently guessing the ticket '{ticket.content}'")
-            if index <= len(roomState.Tickets)-1:
+            if index <= len(roomState.Tickets) - 1:
                 next_step_text = "press Enter when you want to go to the next Ticket"
-                if index == len(roomState.Tickets) - 1: # if there is a ticket after the current one
+                if index == len(roomState.Tickets) - 1:  # if there is a ticket after the current one
                     next_step_text = "press Enter to finish"
                 input(next_step_text)
                 guesses_dict = roomState.Tickets[index].guesses
@@ -159,7 +214,7 @@ if __name__ == "__main__":
                     sum_of_guesses += guess
                 average = 0
                 if len(guesses_dict) > 0:
-                    average = sum_of_guesses/len(guesses_dict)
+                    average = sum_of_guesses / len(guesses_dict)
                 print(f"the final guess of the ticket {ticket.content} is: {average}")
                 roomState.set_ticket_average(index, average)
                 averageInstruction: Instruction = Instruction("average", str(index) + ":" + str(average), user.id)
