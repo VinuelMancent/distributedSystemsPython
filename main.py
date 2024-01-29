@@ -147,6 +147,7 @@ if __name__ == "__main__":
     index: int = roomState.CurrentTicketIndex
 
     while index < len(roomState.Tickets):
+        print(f"we are in round {index} of {len(roomState.Tickets)}")
         if not user.isScrumMaster:
             while True:
                 last_loop_necessary = True
@@ -212,9 +213,11 @@ if __name__ == "__main__":
                 sum_of_guesses: int = 0
                 for guess in guesses_dict.values():
                     sum_of_guesses += guess
-                average = 0
+                average: int = 0
                 if len(guesses_dict) > 0:
                     average = sum_of_guesses / len(guesses_dict)
+                else:
+                    average = 0
                 print(f"the final guess of the ticket {ticket.content} is: {average}")
                 roomState.set_ticket_average(index, average)
                 averageInstruction: Instruction = Instruction("average", str(index) + ":" + str(average), user.id)
@@ -222,6 +225,10 @@ if __name__ == "__main__":
                 if index == len(roomState.Tickets) - 1:
                     print("---------------FINAL RESULTS---------------")
                     roomState.print_final_tickets()
+                if index == len(roomState.Tickets) - 1:
+                    next_ticket_instruction: Instruction = Instruction("next_ticket", "", user.id)
+                    message = json.dumps(next_ticket_instruction, default=vars)
+                    send_broadcast_message(message, broadcastPort)
             index += 1
 
     print("We are done guessing the tickets, goodbye!")
