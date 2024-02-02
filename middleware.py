@@ -21,7 +21,6 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
         try:
             data, addr = udp_socket.recvfrom(4096)
         except socket.timeout:
-            print("UDP: Zeitüberschreitung beim Empfangen von Daten.")
             continue
         except socket.error as err:
             print(f"UDP: Received error: {err}")
