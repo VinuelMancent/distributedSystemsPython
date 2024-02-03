@@ -11,12 +11,12 @@ import threading
 
 
 class RoomState:
-    def __init__(self, responsible_person: Person, persons: list[Person]=[], tickets:list[Ticket]=[], phase="1"):
+    def __init__(self, responsible_person: Person, persons: list[Person]=[], tickets:list[Ticket]=[], phase="1", current_ticket_index = 0):
         self.Persons = persons
         self.Tickets = tickets
         self.Phase = phase
         self.Responsible = responsible_person
-        self.CurrentTicketIndex = 0
+        self.CurrentTicketIndex = current_ticket_index
         self.lock = threading.Lock()
 
     def to_dict(self):
@@ -34,7 +34,7 @@ class RoomState:
         persons = [Person(**person) for person in data["Persons"]]
         tickets = [Ticket(**ticket) for ticket in data["Tickets"]]
         responsible_person = Person(**data["Responsible"])
-        return RoomState(responsible_person, persons, tickets, data["Phase"])
+        return RoomState(responsible_person, persons, tickets, data["Phase"], data["CurrentTicketIndex"])
 
     def add_person(self, person):
         with self.lock:

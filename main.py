@@ -146,19 +146,19 @@ if __name__ == "__main__":
     print(f"We are going to guess {len(roomState.Tickets)} tickets")
     index: int = roomState.CurrentTicketIndex
 
-    while index < len(roomState.Tickets):
-        print(f"we are in round {index} of {len(roomState.Tickets)}")
+    while roomState.CurrentTicketIndex < len(roomState.Tickets):
+        print(f"we are in round {roomState.CurrentTicketIndex} of {len(roomState.Tickets)}")
         if not user.isScrumMaster:
             while True:
                 last_loop_necessary = True
-                if index != 0:
+                if roomState.CurrentTicketIndex != 0:
                     print(
                         "Waiting for responsible person to go to the next ticket")  # wird wieder mehrfach ausgegeben je nach user index
                 received_message: Instruction = broadcast_queue.get()
                 print(f"received instruction is {received_message.action}")
                 # only check for instruction phase 2
                 if received_message.action == "next_ticket":
-                    ticket = roomState.Tickets[index]
+                    ticket = roomState.Tickets[roomState.CurrentTicketIndex]
                     print(f"We are now guessing the ticket '{ticket.content}'")
                     # Here i try to do the user input handling in another thread in order to skip one question when another signal comes in
                     userinput: int = 0
@@ -173,7 +173,7 @@ if __name__ == "__main__":
                                 stop_user_input_thread["stop"] = True
                                 user_input_thread.join(5.0)
                                 last_loop_necessary = False
-                                index += 1
+                                roomState.CurrentTicketIndex += 1
                                 broadcast_queue.put(received_message)
                                 break
                             elif received_message.action == "guess" and received_message.sender == user.id:
@@ -187,28 +187,28 @@ if __name__ == "__main__":
                         try:
                             received_message: Instruction = broadcast_queue.get()
                             if received_message.action == "redo":
-                                index = index - 1
+                                roomState.CurrentTicketIndex = roomState.CurrentTicketIndex - 1
                                 print("We are reguessing this ticket because of the change of the leader")
                             else:
                                 broadcast_queue.put(received_message)
                         finally:
-                            index += 1
+                            roomState.CurrentTicketIndex += 1
                             break
                         break
                     break
 
         else:
-            ticket = roomState.Tickets[index]
+            ticket = roomState.Tickets[roomState.CurrentTicketIndex]
             next_ticket_instruction: Instruction = Instruction("next_ticket", "", user.id)
             message = json.dumps(next_ticket_instruction, default=vars)
             send_broadcast_message(message, broadcastPort)
             print(f"Your team is currently guessing the ticket '{ticket.content}'")
-            if index <= len(roomState.Tickets) - 1:
+            if roomState.CurrentTicketIndex <= len(roomState.Tickets) - 1:
                 next_step_text = "press Enter when you want to go to the next Ticket"
-                if index == len(roomState.Tickets) - 1:  # if there is a ticket after the current one
+                if roomState.CurrentTicketIndex == len(roomState.Tickets) - 1:  # if there is a ticket after the current one
                     next_step_text = "press Enter to finish"
                 input(next_step_text)
-                guesses_dict = roomState.Tickets[index].guesses
+                guesses_dict = roomState.Tickets[roomState.CurrentTicketIndex].guesses
                 sum_of_guesses: int = 0
                 for guess in guesses_dict.values():
                     sum_of_guesses += guess
@@ -218,17 +218,17 @@ if __name__ == "__main__":
                 else:
                     average = 0
                 print(f"the final guess of the ticket {ticket.content} is: {average}")
-                roomState.set_ticket_average(index, average)
-                averageInstruction: Instruction = Instruction("average", str(index) + ":" + str(average), user.id)
+                roomState.set_ticket_average(roomState.CurrentTicketIndex, average)
+                averageInstruction: Instruction = Instruction("average", str(roomState.CurrentTicketIndex) + ":" + str(average), user.id)
                 middleware.send_broadcast_message(json.dumps(averageInstruction, default=vars), 61424)
-                if index == len(roomState.Tickets) - 1:
+                if roomState.CurrentTicketIndex == len(roomState.Tickets) - 1:
                     print("---------------FINAL RESULTS---------------")
                     roomState.print_final_tickets()
-                if index == len(roomState.Tickets) - 1:
+                if roomState.CurrentTicketIndex == len(roomState.Tickets) - 1:
                     next_ticket_instruction: Instruction = Instruction("next_ticket", "", user.id)
                     message = json.dumps(next_ticket_instruction, default=vars)
                     send_broadcast_message(message, broadcastPort)
-            index += 1
+            roomState.CurrentTicketIndex += 1
 
     print("We are done guessing the tickets, goodbye!")
     threadsRunning = False
