@@ -80,9 +80,7 @@ class RoomState:
             self.Tickets[index].guess(user, guess)
 
     def set_ticket_average(self, index: int, average: float):
-        print("before lock")
         with self.lock:
-            print("in lock")
             self.Tickets[index].set_average(average)
 
     def print_final_tickets(self):

@@ -22,10 +22,10 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
             data, addr = udp_socket.recvfrom(4096)
         except socket.timeout:
             continue
-        except socket.error as err:
-            print(f"UDP: Received error: {err}")
+        except socket.error:
+            continue
         receivedInstruction: Instruction = Instruction(**json.loads(data.decode()))
-        if receivedInstruction.sender == user.id:  # ToDo: check if this works
+        if receivedInstruction.sender == user.id:
             continue
         match receivedInstruction.action:
             case "join":
@@ -74,7 +74,7 @@ def udp_broadcast_listener(messageQueue: queue.Queue, heartbeatQueue: queue.Queu
                 ticket_average: float = float(receivedInstruction.body.split(":")[1])
                 roomState.Tickets[ticket_index].average = ticket_average
             case _:
-                print(f"Empfangene Broadcast-Nachricht von {addr}: {data.decode()}")
+                continue
     udp_socket.close()
 
 
@@ -110,8 +110,7 @@ def tcp_unicast_listener(stopQueue: queue.Queue, person: Person, electionQueue: 
                 receivedInstruction: Instruction = Instruction(**json.loads(data.decode()))
                 electionQueue.put(receivedInstruction)
                 client_socket.close()
-            except Exception as ex:
-                print(f"Exception unicast: {ex}")
+            except Exception:
                 break
 
 

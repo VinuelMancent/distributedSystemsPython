@@ -40,5 +40,4 @@ class Ticket:
 
     def set_average(self, average: float):
         with self.lock:
-            print(f"setting average for {self.content}: {average}")
             self.average = average

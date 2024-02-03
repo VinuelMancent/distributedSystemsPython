@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="fixed readme">
+    <list default="true" id="887f8c72-d91f-421d-9ce7-37f062f235a1" name="Changes" comment="removed unnecessary log">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/middleware.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/roomState.py" beforeDir="false" afterPath="$PROJECT_DIR$/roomState.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ticket.py" beforeDir="false" afterPath="$PROJECT_DIR$/ticket.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -177,7 +180,9 @@
       <workItem from="1706802489407" duration="11000" />
       <workItem from="1706802602080" duration="288000" />
       <workItem from="1706884179979" duration="11000" />
-      <workItem from="1706884615861" duration="52000" />
+      <workItem from="1706884615861" duration="1603000" />
+      <workItem from="1706962220105" duration="1862000" />
+      <workItem from="1706986535635" duration="741000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -491,7 +496,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706802868973</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="removed unnecessary log">
+      <option name="closed" value="true" />
+      <created>1706884685455</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1706884685455</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -509,7 +522,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="The full process now runs, but not every network feature works" />
     <MESSAGE value="added a queue only for room responses so that joining works even when other messages arrive" />
     <MESSAGE value="uff" />
     <MESSAGE value="uff2" />
@@ -534,7 +546,8 @@
     <MESSAGE value="all users leave now after guesses are over" />
     <MESSAGE value="added readme" />
     <MESSAGE value="fixed readme" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed readme" />
+    <MESSAGE value="removed unnecessary log" />
+    <option name="LAST_COMMIT_MESSAGE" value="removed unnecessary log" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScrumPoker$instruction.coverage" NAME="instruction Coverage Results" MODIFIED="1703545325415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

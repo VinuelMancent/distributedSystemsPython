@@ -190,7 +190,6 @@ if __name__ == "__main__":
                                 index = index - 1
                                 print("We are reguessing this ticket because of the change of the leader")
                             else:
-                                print(f"received message {received_message.action}, putting it back there")
                                 broadcast_queue.put(received_message)
                         finally:
                             index += 1
